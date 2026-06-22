@@ -1,0 +1,49 @@
+/*
+ * Design tokens — ported from the "Kinetic — SVG Motion" design handoff.
+ * Custom-property NAMES mirror the demo (`--panel2`, `--dim2`, `--acc2`, …) so
+ * styles port 1:1 with the mockup.
+ */
+:root {
+  /* Surfaces */
+  --bg: #0c0c11;
+  --panel: #101017;
+  --panel2: #15151d;
+  --elev: #1c1c27;
+  --track: #0a0a0f;
+  --lane: #13131b;
+
+  /* Lines & text */
+  --line: #262633;
+  --txt: #e9e9f1;
+  --dim: #83838f;
+  --dim2: #56565f;
+
+  /* Accent */
+  --acc: #14b8a6;
+  --acc2: #2dd4bf;
+
+  /* Literal surfaces used in gradients/overlays (kept as tokens for reuse) */
+  --topbar-grad-a: #13131b;
+  --topbar-grad-b: #0f0f15;
+  --canvas-grad-a: #101019;
+  --canvas-grad-b: #0a0a0e;
+  --glass: #13131bcc;
+  --danger: #ff7a90;
+  --scrollbar-thumb: #2a2a38;
+
+  /* Typography */
+  --font-sans: 'Hanken Grotesk', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --font-size-base: 13px;
+
+  /* Chrome dimensions (exact, from the demo) */
+  --topbar-height: 54px;
+  --timeline-height: 238px;
+  --transport-height: 46px;
+  --tracks-header-height: 28px;
+  --lane-col-width: 160px;
+  --lane-height: 30px;
+  --layers-width: 236px;
+  --inspector-width: 312px;
+  --rail-width: 44px;
+}
