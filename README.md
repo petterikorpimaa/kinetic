@@ -1,7 +1,8 @@
 # SVG Animator
 
 Import an SVG, animate its elements on a keyframe timeline, and export to clean
-CSS `@keyframes`, runnable GSAP code, or the tagged SVG markup. A focused,
+CSS `@keyframes`, runnable GSAP code, the tagged SVG markup, or a rendered
+animated GIF / WebM video. A focused,
 craft-forward take on the core import → select → keyframe → scrub → export loop,
 with undo/redo and autosave.
 
@@ -98,9 +99,12 @@ src/
 │   ├── cssExport.ts     # CSS @keyframes serializer (adaptive: clean / baked)
 │   ├── gsapExport.ts    # gsap.timeline() serializer (per-property tweens)
 │   ├── exportSampling.ts# union times, channel alignment, frame baking
+│   ├── elementVisual.ts # one element's baked visual at time t (preview + raster)
+│   ├── frameRender.ts   # static SVG per frame, sampled from the same engine
 │   ├── persistence.ts   # autosave (de)serialize + schema version + validation
 │   ├── history.ts       # undo/redo via Immer patches
 │   └── immer.ts         # shared Immer setup
+├── render/       # browser-only raster export: rasterize → GIF (gifenc) / WebM
 ├── composables/  # Vue glue: rAF playback loop, keyboard shortcuts, autosave
 ├── types/        # data model (Keyframe, Track, SceneElement, AnimationDocument)
 ├── stores/       # Pinia document + transient playback + persistence stores

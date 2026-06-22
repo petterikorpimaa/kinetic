@@ -3,6 +3,38 @@
 Short ADR-style record of decisions that deviate from, or lock down, the build
 plan ([docs/svg-animator-plan.md](svg-animator-plan.md)). Newest first.
 
+## DEC-10 — Raster export (GIF / WebM) renders per-frame SVGs through the one engine (SVG-88)
+
+**Decision.** GIF/video export samples the **same interpolation path** as the
+editor — it does not re-implement animation for raster output.
+
+- **Shared visual state.** `src/core/elementVisual.ts` computes one element's
+  baked visual (`transform` / `opacity` / `fill` / dash / `filter`) at time `t`
+  from its tracks. `CanvasStage` (live preview) and the frame renderer both call
+  it, so a rendered frame can't drift from what the canvas shows (rule 1). The
+  baking helpers previously inlined in `CanvasStage` were extracted here.
+- **Pure frame renderer.** `src/core/frameRender.ts` `createFrameRenderer(doc)`
+  parses the inlined SVG once (platform `DOMParser`, as `processSvg` already
+  does), then `renderAt(t)` writes each element's computed visual onto the parsed
+  nodes and serializes — a static SVG string per frame. Framework-free and
+  unit-tested. It reads `transformOrigin`/`pathLength` from the document
+  (measured live, persisted), so it stays deterministic and DOM-measure-free.
+- **Browser encode in `src/render/`** (not core — rasterizing SVG needs a real
+  browser, untestable in jsdom): `rasterize` paints a frame onto a canvas;
+  **GIF** via **`gifenc`** (only new runtime dep — ~10 KB, MIT; per-frame 256-colour
+  palette, `repeat` for loop) streams frames so all pixels are never held at once;
+  **WebM** via the native **`MediaRecorder`** API (zero dep). `rasterExport.ts`
+  orchestrates `frameTimes → renderAt → rasterize → encode` with progress + abort;
+  its planning math (`planRasterExport`) is pure and unit-tested.
+
+**Why.** Re-using `valueAt`/the samplers keeps the "one source of truth" rule
+intact for a third consumer. `gifenc` is justified over hand-rolling LZW + colour
+quantization. **WebM via `MediaRecorder`** was chosen over a deterministic muxer
+or `ffmpeg.wasm` (MP4): zero dependency, but it captures in **real time** so an
+export runs for ~the clip's duration and frame timing is approximate — an
+accepted trade-off for v1. MP4 (heavy WASM) and deterministic WebM remain future
+options behind the same orchestrator.
+
 ## DEC-9 — Undo/redo wiring + localStorage autosave (M6)
 
 **Decision.** M6 ships the undo/redo UI and autosave on top of the Phase-0

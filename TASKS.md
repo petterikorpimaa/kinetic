@@ -129,7 +129,7 @@ The demo extends the plan's v1 scope. Decisions made — the board reflects thes
 - [x] **CSS export easing fidelity (adaptive)** (L) `P0` — per-segment `cubic-bezier()` when channel tracks align; per-frame baking when they don't (DEC-8). _The real export._
 - [x] **Copy to clipboard + feedback** (XS) `P0` — "Copy CSS" → "Copied ✓".
 - [x] **GSAP code export** (M) `P2` — runnable `gsap.timeline()`, per-property tweens + `CustomEase` (plan §5).
-- [ ] **GIF/video render** (M) `P3` — demo is a stub; real implementation deferred to v2.
+- [x] **GIF/video render** (M) `P3` — raster export: pure `frameRender` bakes each frame's SVG from the shared engine, then rasterize → encode. GIF via `gifenc` (per-frame palette, loop), WebM via `MediaRecorder` (DEC-10).
 
 ## Epic 11 — Keyboard shortcuts `[playback]` · `M3`
 

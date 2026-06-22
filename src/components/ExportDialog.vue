@@ -4,34 +4,50 @@ import { X, Check, Copy, Download } from '@lucide/vue';
 import { useDocumentStore } from '@/stores/document';
 import { exportCss } from '@/core/cssExport';
 import { exportGsap } from '@/core/gsapExport';
+import RasterExportPanel from './RasterExportPanel.vue';
 
-type Format = 'css' | 'gsap' | 'svg';
+type CodeFormat = 'css' | 'gsap' | 'svg';
+type Format = CodeFormat | 'gif' | 'video';
 
 const emit = defineEmits<{ close: [] }>();
 const store = useDocumentStore();
 
-const FORMAT_META: Record<Format, { label: string; ext: string; mime: string }> = {
-  css: { label: 'CSS', ext: 'css', mime: 'text/css' },
-  gsap: { label: 'GSAP', ext: 'js', mime: 'text/javascript' },
-  svg: { label: 'SVG', ext: 'svg', mime: 'image/svg+xml' },
+const TABS: readonly { id: Format; label: string }[] = [
+  { id: 'css', label: 'CSS' },
+  { id: 'gsap', label: 'GSAP' },
+  { id: 'svg', label: 'SVG' },
+  { id: 'gif', label: 'GIF' },
+  { id: 'video', label: 'Video' },
+];
+const CODE_META: Record<CodeFormat, { ext: string; mime: string }> = {
+  css: { ext: 'css', mime: 'text/css' },
+  gsap: { ext: 'js', mime: 'text/javascript' },
+  svg: { ext: 'svg', mime: 'image/svg+xml' },
 };
-const FORMATS: readonly Format[] = ['css', 'gsap', 'svg'];
+
+function isCodeFormat(value: Format): value is CodeFormat {
+  return value === 'css' || value === 'gsap' || value === 'svg';
+}
 
 const format = ref<Format>('css');
 const copied = ref(false);
 let copiedTimer: ReturnType<typeof setTimeout> | undefined;
 
-function generate(which: Format): string {
+// In the raster branch `format` is always 'gif' or 'video'; narrow it for the panel.
+const rasterFormat = computed<'gif' | 'video'>(() => (format.value === 'video' ? 'video' : 'gif'));
+
+function generate(which: CodeFormat): string {
   if (which === 'css') return exportCss(store.document);
   if (which === 'gsap') return exportGsap(store.document);
   return store.document.svgMarkup || '<!-- Import an SVG to export its markup. -->';
 }
 
-const code = computed(() => generate(format.value));
+const code = computed(() => (isCodeFormat(format.value) ? generate(format.value) : ''));
 
 const downloadName = computed(() => {
   const base = store.document.name.replace(/\.svg$/i, '').trim() || 'animation';
-  return `${base}.${FORMAT_META[format.value].ext}`;
+  const ext = isCodeFormat(format.value) ? CODE_META[format.value].ext : 'txt';
+  return `${base}.${ext}`;
 });
 
 function setFormat(next: Format): void {
@@ -53,7 +69,8 @@ async function copy(): Promise<void> {
 }
 
 function download(): void {
-  const blob = new Blob([code.value], { type: `${FORMAT_META[format.value].mime};charset=utf-8` });
+  if (!isCodeFormat(format.value)) return;
+  const blob = new Blob([code.value], { type: `${CODE_META[format.value].mime};charset=utf-8` });
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
   link.href = url;
@@ -85,21 +102,21 @@ onBeforeUnmount(() => {
       <div class="bar">
         <div class="tabs" role="tablist">
           <button
-            v-for="id in FORMATS"
-            :key="id"
+            v-for="tab in TABS"
+            :key="tab.id"
             type="button"
             role="tab"
             class="tab"
-            :class="{ 'tab--active': format === id }"
-            :data-testid="`export-tab-${id}`"
-            :aria-selected="format === id"
-            @click="setFormat(id)"
+            :class="{ 'tab--active': format === tab.id }"
+            :data-testid="`export-tab-${tab.id}`"
+            :aria-selected="format === tab.id"
+            @click="setFormat(tab.id)"
           >
-            {{ FORMAT_META[id].label }}
+            {{ tab.label }}
           </button>
         </div>
 
-        <div class="actions">
+        <div v-if="isCodeFormat(format)" class="actions">
           <button
             type="button"
             class="action"
@@ -123,7 +140,12 @@ onBeforeUnmount(() => {
         </div>
       </div>
 
-      <pre class="code" data-testid="export-code"><code>{{ code }}</code></pre>
+      <pre
+        v-if="isCodeFormat(format)"
+        class="code"
+        data-testid="export-code"
+      ><code>{{ code }}</code></pre>
+      <RasterExportPanel v-else :format="rasterFormat" />
     </div>
   </div>
 </template>

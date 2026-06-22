@@ -4,7 +4,6 @@ import { Clapperboard, Grid3x3, Grip, Square, ChevronDown, RotateCcw } from '@lu
 import { useDocumentStore, type ElementMetric } from '@/stores/document';
 import { usePlaybackStore } from '@/stores/playback';
 import type { SceneElement } from '@/types/element';
-import type { NumericTrack, ColorTrack, AnyTrack, NumericProperty } from '@/types/track';
 import {
   type Camera,
   DEFAULT_CAMERA,
@@ -13,9 +12,12 @@ import {
   isViewChanged,
   zoomPercent,
 } from '@/core/camera';
-import { sampleNumber, sampleColor, composeTransform, strokeDashOffset } from '@/core/animation';
-import { scalarFilterCss, dropShadowCss, composeFilter, SCALAR_FILTERS } from '@/core/filters';
-import { getPropertyDef } from '@/core/properties';
+import {
+  computeElementVisual,
+  applyElementVisual,
+  type NodeBaseline,
+  type ElementVisual,
+} from '@/core/elementVisual';
 
 // Renders the inlined SVG: click-to-select, wheel zoom + drag pan (M1, Epic 4),
 // per-element visibility, one-time metadata capture (bbox centre, path length),
@@ -32,12 +34,6 @@ const playback = usePlaybackStore();
 // Live node refs + their original attributes, rebuilt on each (re)mount. The
 // baseline lets us restore an element when a property is removed or animation
 // is disabled, instead of leaving the last animated value stuck on the node.
-interface NodeBaseline {
-  readonly transform: string | null;
-  readonly opacity: string | null;
-  readonly fill: string | null;
-  readonly filter: string;
-}
 const nodeById = new Map<string, SVGGraphicsElement>();
 const baselineById = new Map<string, NodeBaseline>();
 
@@ -158,127 +154,26 @@ function applyVisibility(): void {
   });
 }
 
-function setAttr(node: SVGGraphicsElement, name: string, value: string | null): void {
-  if (value === null) node.removeAttribute(name);
-  else node.setAttribute(name, value);
-}
-
-// A track's value kind is fixed by its property, so these reads are sound.
-function numberTrack(tracks: readonly AnyTrack[], property: string): NumericTrack | undefined {
-  return tracks.find((track) => track.property === property) as NumericTrack | undefined;
-}
-function colorTrack(tracks: readonly AnyTrack[], property: string): ColorTrack | undefined {
-  return tracks.find((track) => track.property === property) as ColorTrack | undefined;
-}
-
-function applyTransform(
-  node: SVGGraphicsElement,
-  element: SceneElement,
-  tracks: readonly AnyTrack[],
-  time: number,
-  base: NodeBaseline,
-): void {
-  const xTrack = numberTrack(tracks, 'x');
-  const yTrack = numberTrack(tracks, 'y');
-  const scaleTrack = numberTrack(tracks, 'scale');
-  const rotationTrack = numberTrack(tracks, 'rotation');
-  if (!xTrack && !yTrack && !scaleTrack && !rotationTrack) {
-    setAttr(node, 'transform', base.transform);
-    return;
-  }
-  const transform = composeTransform(element.transformOrigin, {
-    x: sampleNumber(xTrack, time, 0),
-    y: sampleNumber(yTrack, time, 0),
-    scale: sampleNumber(scaleTrack, time, 1),
-    rotation: sampleNumber(rotationTrack, time, 0),
-  });
-  node.setAttribute('transform', transform);
-}
-
-function applyDraw(
-  node: SVGGraphicsElement,
-  element: SceneElement,
-  drawTrack: NumericTrack | undefined,
-  time: number,
-): void {
-  if (!drawTrack) {
-    node.style.strokeDasharray = '';
-    node.style.strokeDashoffset = '';
-    return;
-  }
-  const length = element.pathLength || 0;
-  node.style.strokeDasharray = String(length);
-  node.style.strokeDashoffset = String(
-    strokeDashOffset(length, sampleNumber(drawTrack, time, 100)),
-  );
-}
-
-function numericDefault(property: NumericProperty): number {
-  const def = getPropertyDef(property);
-  return def !== undefined && def.kind === 'number' ? def.defaultValue : 0;
-}
-
-// Compose the element's `filter` from its active filter tracks (scalar filters
-// in canonical order, then drop-shadow), restoring the baseline when none.
-function applyFilters(
-  node: SVGGraphicsElement,
-  tracks: readonly AnyTrack[],
-  time: number,
-  base: NodeBaseline,
-): void {
-  const parts: string[] = [];
-  for (const filter of SCALAR_FILTERS) {
-    const track = numberTrack(tracks, filter);
-    if (track !== undefined) {
-      parts.push(scalarFilterCss(filter, sampleNumber(track, time, numericDefault(filter))));
-    }
-  }
-  const shadowX = numberTrack(tracks, 'shadowX');
-  const shadowY = numberTrack(tracks, 'shadowY');
-  const shadowColor = colorTrack(tracks, 'shadowColor');
-  if (shadowX !== undefined || shadowY !== undefined || shadowColor !== undefined) {
-    parts.push(
-      dropShadowCss(
-        sampleNumber(shadowX, time, numericDefault('shadowX')),
-        sampleNumber(shadowY, time, numericDefault('shadowY')),
-        sampleColor(shadowColor, time, '#000000'),
-      ),
-    );
-  }
-  node.style.filter = parts.length > 0 ? composeFilter(parts) : base.filter;
+// Disabling animation restores the imported baseline: no transform, original
+// opacity/fill/filter, dash cleared.
+function baselineVisual(base: NodeBaseline): ElementVisual {
+  return {
+    transform: base.transform,
+    opacity: base.opacity,
+    fill: base.fill,
+    strokeDasharray: '',
+    strokeDashoffset: '',
+    filter: base.filter,
+  };
 }
 
 function applyElement(node: SVGGraphicsElement, element: SceneElement, time: number): void {
   const base = baselineById.get(element.id);
   if (base === undefined) return;
-  if (debug.value) {
-    setAttr(node, 'transform', base.transform);
-    setAttr(node, 'opacity', base.opacity);
-    setAttr(node, 'fill', base.fill);
-    node.style.strokeDasharray = '';
-    node.style.strokeDashoffset = '';
-    node.style.filter = base.filter;
-    return;
-  }
-  const tracks = store.tracksForElement(element.id);
-  applyTransform(node, element, tracks, time, base);
-
-  const opacityTrack = numberTrack(tracks, 'opacity');
-  setAttr(
-    node,
-    'opacity',
-    opacityTrack ? String(sampleNumber(opacityTrack, time, 1)) : base.opacity,
-  );
-
-  const fillTrack = colorTrack(tracks, 'fill');
-  setAttr(
-    node,
-    'fill',
-    fillTrack ? sampleColor(fillTrack, time, base.fill ?? '#14b8a6') : base.fill,
-  );
-
-  applyDraw(node, element, numberTrack(tracks, 'draw'), time);
-  applyFilters(node, tracks, time, base);
+  const visual = debug.value
+    ? baselineVisual(base)
+    : computeElementVisual(element, store.tracksForElement(element.id), time, base);
+  applyElementVisual(node, visual);
 }
 
 // Write every element's animated values at the current playhead. The editor

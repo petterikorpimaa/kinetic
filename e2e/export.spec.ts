@@ -40,3 +40,44 @@ test('animate a property and export it to CSS and GSAP', async ({ page, context 
   await page.getByTestId('export-copy').click();
   await expect(page.getByTestId('export-copy')).toContainText('Copied');
 });
+
+// SVG-88: the raster pipeline (frame SVG → canvas → gifenc) only runs in a real
+// browser, so the GIF render is validated here rather than in unit tests.
+test('renders the animation to a downloadable GIF', async ({ page }) => {
+  await page.goto('/');
+
+  await page.getByTestId('menu-button').click();
+  await page.getByTestId('menu-export').click();
+  await expect(page.getByTestId('export-dialog')).toBeVisible();
+
+  await page.getByTestId('export-tab-gif').click();
+  await expect(page.getByTestId('raster-panel')).toBeVisible();
+
+  // A low frame rate keeps the render quick and the test stable.
+  await page.getByTestId('raster-fps').fill('8');
+  await page.getByTestId('raster-render').click();
+
+  // The encoded GIF previews and is offered for download.
+  await expect(page.getByTestId('raster-preview')).toBeVisible({ timeout: 30_000 });
+  await expect(page.getByTestId('raster-download')).toContainText('.gif');
+});
+
+// SVG-88: WebM uses the native MediaRecorder, which only exists in a browser.
+// Assert a non-zero recording is produced so a silently-empty blob would fail.
+test('records the animation to a WebM video', async ({ page }) => {
+  await page.goto('/');
+
+  await page.getByTestId('menu-button').click();
+  await page.getByTestId('menu-export').click();
+  await page.getByTestId('export-tab-video').click();
+  await expect(page.getByTestId('raster-panel')).toBeVisible();
+
+  // A low frame rate keeps the real-time capture short.
+  await page.getByTestId('raster-fps').fill('5');
+  await page.getByTestId('raster-render').click();
+
+  const download = page.getByTestId('raster-download');
+  await expect(download).toBeVisible({ timeout: 60_000 });
+  await expect(download).toContainText('.webm');
+  await expect(download).not.toContainText('0 B');
+});
