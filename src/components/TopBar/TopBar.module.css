@@ -97,26 +97,8 @@
 }
 
 .historyBtn {
-  width: 34px;
-  height: 34px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 9px;
-  border: 1px solid var(--line);
-  background: var(--elev);
-  color: var(--dim);
-  cursor: pointer;
-}
-
-.historyBtn:hover:not(:disabled) {
-  color: var(--txt);
-  border-color: var(--dim2);
-}
-
-.historyBtn:disabled {
-  opacity: 0.4;
-  cursor: default;
+  --btn-square: 34px;
+  --btn-bd-hover: var(--dim2);
 }
 
 .menu {
@@ -125,23 +107,7 @@
 }
 
 .menuBtn {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  height: 34px;
-  padding: 0 13px;
-  border-radius: 9px;
-  border: 1px solid var(--line);
-  background: var(--elev);
-  color: var(--txt);
-  font-weight: 700;
-  font-size: 13px;
-  cursor: pointer;
-}
-
-.menuBtn:hover,
-.open {
-  border-color: var(--dim2);
+  --btn-gap: 8px;
 }
 
 .backdrop {

@@ -3,6 +3,7 @@ import { ref } from 'vue';
 import { UploadCloud, X } from '@lucide/vue';
 import { useDocumentStore } from '@/stores/document';
 import { SAMPLE_SVG, SAMPLE_FILE_NAME } from '@/core/sample';
+import Button from '@/atoms/Button/Button.vue';
 import styles from './ImportDialog.module.css';
 
 const emit = defineEmits<{ close: [] }>();
@@ -51,9 +52,9 @@ function loadSample(): void {
     <div :class="styles.dialog" data-testid="import-dialog" @click.stop>
       <div :class="styles.head">
         <h2 :class="styles.title">Import an SVG</h2>
-        <button type="button" :class="styles.close" title="Close" @click="emit('close')">
+        <Button variant="icon" :class="styles.close" title="Close" @click="emit('close')">
           <X :size="15" :stroke-width="1.6" />
-        </button>
+        </Button>
       </div>
       <p :class="styles.lead">
         Drop a file or browse. Each top-level shape becomes an animatable layer — start keying
@@ -82,10 +83,16 @@ function loadSample(): void {
         <span :class="styles.orLine" /><span>or</span><span :class="styles.orLine" />
       </div>
 
-      <button type="button" :class="styles.sample" data-testid="load-sample" @click="loadSample">
+      <Button
+        variant="ghost"
+        block
+        :class="styles.sample"
+        data-testid="load-sample"
+        @click="loadSample"
+      >
         <span :class="styles.sampleDiamond" />
         Load the sample animation
-      </button>
+      </Button>
     </div>
   </div>
 </template>

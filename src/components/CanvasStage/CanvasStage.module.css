@@ -42,19 +42,30 @@
   color: var(--txt);
 }
 
-.active {
-  color: var(--acc2);
-  border-color: var(--acc);
-}
-
-.icon,
 .color {
   padding: 0 9px;
 }
 
-.icon {
-  width: 33px;
-  justify-content: center;
+/* The floating canvas controls run on the Button atom; these carry the glass
+ * surface and the exact toolbar dimensions. The colour <label> keeps .ctrl. */
+.glass {
+  --btn-fg: var(--dim);
+  --btn-bg: var(--glass);
+  backdrop-filter: blur(6px);
+}
+
+.ctrlBtn {
+  --btn-h: 33px;
+  --btn-px: 11px;
+  --btn-radius: 10px;
+  --btn-fs: 12px;
+  --btn-fw: 600;
+  --btn-bd-hover: var(--line);
+}
+
+.ctrlIcon {
+  --btn-square: 33px;
+  --btn-radius: 10px;
 }
 
 .chev {
@@ -236,19 +247,11 @@
   color: var(--dim);
 }
 
-.reset {
-  height: 24px;
-  padding: 0 9px;
-  border-radius: 7px;
-  border: 1px solid var(--line);
-  background: var(--elev);
-  color: var(--txt);
-  font-family: inherit;
-  font-size: 11px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.reset:hover {
-  border-color: var(--acc);
+.resetView {
+  --btn-h: 24px;
+  --btn-px: 9px;
+  --btn-radius: 7px;
+  --btn-fs: 11px;
+  --btn-fw: 600;
+  --btn-bd-hover: var(--acc);
 }

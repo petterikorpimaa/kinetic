@@ -4,6 +4,7 @@ import { Menu, Upload, Code2, Undo2, Redo2, HardDrive, Trash2, Check } from '@lu
 import { useDocumentStore } from '@/stores/document';
 import { usePersistenceStore } from '@/stores/persistence';
 import { createEmptyDocument } from '@/types';
+import Button from '@/atoms/Button/Button.vue';
 import styles from './TopBar.module.css';
 
 const emit = defineEmits<{ import: []; export: [] }>();
@@ -62,8 +63,8 @@ function clearSaved(): void {
     </div>
 
     <div :class="styles.history">
-      <button
-        type="button"
+      <Button
+        variant="icon"
         :class="styles.historyBtn"
         title="Undo (⌘Z)"
         data-testid="undo"
@@ -71,9 +72,9 @@ function clearSaved(): void {
         @click="store.undo()"
       >
         <Undo2 :size="15" :stroke-width="1.6" />
-      </button>
-      <button
-        type="button"
+      </Button>
+      <Button
+        variant="icon"
         :class="styles.historyBtn"
         title="Redo (⌘⇧Z)"
         data-testid="redo"
@@ -81,19 +82,21 @@ function clearSaved(): void {
         @click="store.redo()"
       >
         <Redo2 :size="15" :stroke-width="1.6" />
-      </button>
+      </Button>
     </div>
 
     <div :class="styles.menu">
-      <button
-        type="button"
-        :class="[styles.menuBtn, menuOpen ? styles.open : '']"
+      <Button
+        variant="ghost"
+        :class="styles.menuBtn"
+        :style="{ '--btn-bd': menuOpen ? 'var(--dim2)' : '' }"
         data-testid="menu-button"
+        :aria-expanded="menuOpen"
         @click="menuOpen = !menuOpen"
       >
         <Menu :size="15" :stroke-width="1.5" />
         <span>Menu</span>
-      </button>
+      </Button>
       <template v-if="menuOpen">
         <div :class="styles.backdrop" @click="menuOpen = false" />
         <div :class="styles.dropdown">

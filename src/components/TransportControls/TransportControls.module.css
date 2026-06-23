@@ -8,53 +8,18 @@
   border-bottom: 1px solid var(--line);
 }
 
+/* rewind/loop: icon button, teal hover (Button atom owns the rest). */
 .btn {
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
-  border: 1px solid var(--line);
-  background: var(--elev);
-  color: var(--txt);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  --btn-radius: 8px;
+  --btn-fg: var(--txt);
+  --btn-fg-hover: var(--acc2);
+  --btn-bd-hover: var(--dim2);
 }
 
-.active {
-  color: var(--acc2);
-  border-color: var(--acc);
-}
-
-.btn:hover {
-  color: var(--acc2);
-  border-color: var(--dim2);
-}
-
-.btn:active {
-  transform: translateY(1px);
-}
-
+/* play: the prominent filled control. */
 .play {
-  width: 38px;
-  height: 38px;
-  border-radius: 10px;
-  border: 1px solid var(--acc);
-  background: var(--acc);
-  color: #0b0b14;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 14px -4px var(--acc);
-}
-
-.play:hover {
-  filter: brightness(1.08);
-}
-
-.play:active {
-  transform: translateY(1px);
+  --btn-square: 38px;
+  --btn-radius: 10px;
 }
 
 .time {

@@ -169,26 +169,5 @@
 }
 
 .btn {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  height: 34px;
-  padding: 0 13px;
-  border-radius: 9px;
-  border: 1px solid var(--line);
-  background: var(--elev);
-  color: var(--txt);
-  font-family: inherit;
-  font-size: 12px;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.btn:hover {
-  border-color: var(--dim2);
-}
-
-.primary {
-  border-color: var(--acc);
-  color: var(--acc2);
+  --btn-fs: 12px;
 }

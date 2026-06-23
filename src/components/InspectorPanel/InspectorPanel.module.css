@@ -59,24 +59,6 @@
   color: var(--danger);
 }
 
-.iconBtn {
-  width: 24px;
-  height: 24px;
-  flex: none;
-  border-radius: 7px;
-  border: 1px solid var(--line);
-  background: var(--elev);
-  color: var(--dim);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.iconBtn:hover {
-  color: var(--txt);
-}
-
 .props {
   padding: 12px 14px 16px;
   flex: none;
@@ -153,21 +135,9 @@
 }
 
 .shadowRemove {
-  width: 22px;
-  height: 22px;
-  flex: none;
-  border: none;
-  border-radius: 6px;
-  background: none;
-  color: var(--dim2);
-  font-size: 14px;
-  line-height: 1;
-  cursor: pointer;
-}
-
-.shadowRemove:hover {
-  color: var(--danger);
-  background: #ffffff14;
+  --btn-square: 22px;
+  --btn-radius: 6px;
+  --btn-fs: 14px;
 }
 
 .addWrap {
@@ -176,25 +146,8 @@
 }
 
 .add {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 7px;
-  width: 100%;
-  padding: 9px;
-  border-radius: 9px;
-  border: 1px dashed var(--line);
-  background: none;
-  color: var(--dim);
-  font-family: inherit;
-  font-size: 12.5px;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.add:hover {
-  color: var(--txt);
-  border-color: var(--dim2);
+  --btn-px: 9px;
+  --btn-fs: 12.5px;
 }
 
 .empty {

@@ -1,0 +1,141 @@
+/* Button — the single source of button appearance and behavior (SVG-145).
+ * `variant` + the modifier classes decide the look; dimensions come from `size`
+ * and from --btn-* custom properties a call site sets for its exact context.
+ * No other component restyles a button — it only overrides these variables.
+ *
+ * Size presets feed the shapes through INTERNAL --_* vars, so a call site's
+ * public --btn-square / --btn-radius / … always wins over the preset, whatever
+ * order the stylesheets land in. */
+
+.btn {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  gap: var(--btn-gap, 7px);
+  border: 1px solid transparent;
+  border-radius: var(--btn-radius, var(--_radius, 9px));
+  background: none;
+  color: var(--txt);
+  font-family: inherit;
+  font-size: var(--btn-fs, var(--_fs, 13px));
+  font-weight: var(--btn-fw, 700);
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.btn:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+/* Scale presets */
+.md {
+  --_h: 34px;
+  --_px: 13px;
+  --_square: 32px;
+  --_radius: 9px;
+  --_fs: 13px;
+}
+
+.sm {
+  --_h: 28px;
+  --_px: 11px;
+  --_square: 24px;
+  --_radius: 7px;
+  --_fs: 12px;
+}
+
+/* Shapes */
+.pill {
+  height: var(--btn-h, var(--_h));
+  padding: 0 var(--btn-px, var(--_px));
+}
+
+.square {
+  width: var(--btn-square, var(--_square));
+  height: var(--btn-sq-h, var(--btn-square, var(--_square)));
+  padding: 0;
+}
+
+/* Full-width action — padded all round rather than a fixed-height pill. */
+.block {
+  width: 100%;
+  height: auto;
+  padding: var(--btn-py, 9px) var(--btn-px, var(--_px));
+}
+
+/* Variants */
+.ghost {
+  border-color: var(--btn-bd, var(--line));
+  background: var(--btn-bg, var(--elev));
+  color: var(--btn-fg, var(--txt));
+}
+
+.ghost:hover:not(:disabled) {
+  border-color: var(--btn-bd-hover, var(--dim2));
+  color: var(--btn-fg-hover, var(--txt));
+}
+
+.icon {
+  border-color: var(--btn-bd, var(--line));
+  background: var(--btn-bg, var(--elev));
+  color: var(--btn-fg, var(--dim));
+}
+
+.icon:hover:not(:disabled) {
+  border-color: var(--btn-bd-hover, var(--line));
+  color: var(--btn-fg-hover, var(--txt));
+}
+
+.dashed {
+  border-style: dashed;
+  border-color: var(--btn-bd, var(--line));
+  color: var(--btn-fg, var(--dim));
+}
+
+.dashed:hover:not(:disabled) {
+  border-color: var(--btn-bd-hover, var(--dim2));
+  color: var(--btn-fg-hover, var(--txt));
+}
+
+.solid {
+  border-color: var(--acc);
+  background: var(--acc);
+  color: #0b0b14;
+  box-shadow: 0 4px 14px -4px var(--acc);
+}
+
+.solid:hover:not(:disabled) {
+  filter: brightness(1.08);
+}
+
+/* Borderless icon — layer eye, remove ×. */
+.plain {
+  border-color: transparent;
+  background: none;
+  color: var(--btn-fg, var(--dim2));
+}
+
+.plain:hover:not(:disabled) {
+  background: #ffffff14;
+  color: var(--btn-fg-hover, var(--txt));
+}
+
+/* Destructive hover — remove, drop-shadow remove. */
+.danger:hover:not(:disabled) {
+  color: var(--danger);
+}
+
+/* Accent emphasis — a pressed toggle (loop, debug, keyed) or a primary
+ * action (Copy, Render). Keeps the accent text colour through hover. */
+.accent {
+  --btn-fg-hover: var(--acc2);
+  border-color: var(--acc);
+  color: var(--acc2);
+}

@@ -42,21 +42,8 @@
 }
 
 .close {
-  width: 30px;
-  height: 30px;
-  flex: none;
-  border-radius: 8px;
-  border: 1px solid var(--line);
-  background: var(--elev);
-  color: var(--dim);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.close:hover {
-  color: var(--txt);
+  --btn-square: 30px;
+  --btn-radius: 8px;
 }
 
 .bar {
@@ -104,19 +91,8 @@
 }
 
 .action {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  height: 34px;
-  padding: 0 12px;
-  border-radius: 9px;
-  border: 1px solid var(--line);
-  background: var(--elev);
-  color: var(--txt);
-  font-family: inherit;
-  font-size: 12px;
-  font-weight: 700;
-  cursor: pointer;
+  --btn-px: 12px;
+  --btn-fs: 12px;
   max-width: 220px;
 }
 
@@ -124,20 +100,6 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-.action:hover {
-  border-color: var(--dim2);
-}
-
-.primary {
-  border-color: var(--acc);
-  color: var(--acc2);
-}
-
-.done {
-  color: var(--acc2);
-  border-color: var(--acc);
 }
 
 .code {

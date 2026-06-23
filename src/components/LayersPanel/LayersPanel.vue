@@ -15,6 +15,7 @@ import {
   EyeOff,
 } from '@lucide/vue';
 import { useDocumentStore } from '@/stores/document';
+import Button from '@/atoms/Button/Button.vue';
 import styles from './LayersPanel.module.css';
 
 // Layer list: select + per-element visibility toggle (M1, Epic 5).
@@ -62,14 +63,9 @@ function hasKeyframes(id: string): boolean {
           <span :title="fileName" :class="styles.fileLabel">{{ fileName }}</span>
         </div>
       </div>
-      <button
-        type="button"
-        :class="styles.iconBtn"
-        title="Collapse panel"
-        @click="$emit('collapse')"
-      >
+      <Button variant="icon" size="sm" title="Collapse panel" @click="$emit('collapse')">
         <ChevronLeft :size="13" :stroke-width="1.4" />
-      </button>
+      </Button>
     </div>
 
     <div :class="styles.body" @pointerdown.self="store.selectElement(null)">
@@ -94,8 +90,10 @@ function hasKeyframes(id: string): boolean {
           :data-testid="`layer-dot-${el.id}`"
           title="Has keyframes"
         />
-        <button
-          type="button"
+        <Button
+          variant="icon"
+          plain
+          size="sm"
           :class="styles.eye"
           :data-testid="`layer-vis-${el.id}`"
           :title="store.isElementHidden(el.id) ? 'Show layer' : 'Hide layer'"
@@ -106,7 +104,7 @@ function hasKeyframes(id: string): boolean {
             :size="13"
             :stroke-width="1.6"
           />
-        </button>
+        </Button>
       </div>
     </div>
 

@@ -3,6 +3,7 @@ import { computed } from 'vue';
 import { SkipBack, Play, Pause, Repeat } from '@lucide/vue';
 import { useDocumentStore } from '@/stores/document';
 import { usePlaybackStore } from '@/stores/playback';
+import Button from '@/atoms/Button/Button.vue';
 import styles from './TransportControls.module.css';
 
 // Transport row (M3, Epic 7/9): back-to-start, play/pause, loop, the live
@@ -23,17 +24,17 @@ function onDuration(event: Event): void {
 
 <template>
   <div :class="styles.transport">
-    <button
-      type="button"
+    <Button
+      variant="icon"
       :class="styles.btn"
       title="Back to start"
       data-testid="transport-rewind"
       @click="playback.rewind()"
     >
       <SkipBack :size="14" fill="currentColor" :stroke-width="0" />
-    </button>
-    <button
-      type="button"
+    </Button>
+    <Button
+      variant="solid"
       :class="styles.play"
       :title="playback.playing ? 'Pause' : 'Play'"
       data-testid="transport-play"
@@ -41,16 +42,17 @@ function onDuration(event: Event): void {
     >
       <Pause v-if="playback.playing" :size="15" fill="currentColor" :stroke-width="0" />
       <Play v-else :size="15" fill="currentColor" :stroke-width="0" />
-    </button>
-    <button
-      type="button"
-      :class="[styles.btn, playback.loop ? styles.active : '']"
+    </Button>
+    <Button
+      variant="icon"
+      :class="styles.btn"
+      :active="playback.loop"
       title="Loop"
       data-testid="transport-loop"
       @click="playback.toggleLoop()"
     >
       <Repeat :size="15" :stroke-width="1.5" />
-    </button>
+    </Button>
 
     <div :class="styles.time">
       <span :class="styles.now" data-testid="transport-time">{{ nowText }}</span>

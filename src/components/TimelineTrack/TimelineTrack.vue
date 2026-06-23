@@ -7,6 +7,7 @@ import { getPropertyDef } from '@/core/properties';
 import { sampleNumber, sampleColor } from '@/core/animation';
 import { timeToFraction } from '@/core/timeline';
 import type { AnyTrack, NumericTrack, ColorTrack } from '@/types/track';
+import Button from '@/atoms/Button/Button.vue';
 import styles from './TimelineTrack.module.css';
 
 // One lane per active property (M3, Epic 7): label + count + add-keyframe,
@@ -88,15 +89,15 @@ function onKeyframeDown(event: PointerEvent, keyframe: { id: string }): void {
     <div :class="styles.labelCol">
       <span :class="styles.name" data-testid="track-name" :title="label">{{ label }}</span>
       <span :class="styles.count" data-testid="track-count">{{ count }}</span>
-      <button
-        type="button"
+      <Button
+        variant="icon"
         :class="styles.add"
         title="Add keyframe at playhead"
         data-testid="lane-add-keyframe"
         @click="addKeyframeAtPlayhead"
       >
         <Plus :size="13" :stroke-width="1.8" />
-      </button>
+      </Button>
     </div>
     <div ref="laneRef" data-lane :class="[styles.lane, dragging ? styles.dragging : '']">
       <button

@@ -34,20 +34,8 @@
 }
 
 .close {
-  width: 30px;
-  height: 30px;
-  border-radius: 8px;
-  border: 1px solid var(--line);
-  background: var(--elev);
-  color: var(--dim);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.close:hover {
-  color: var(--txt);
+  --btn-square: 30px;
+  --btn-radius: 8px;
 }
 
 .lead {
@@ -133,24 +121,10 @@
 }
 
 .sample {
-  width: 100%;
-  padding: 12px;
-  border-radius: 11px;
-  border: 1px solid var(--line);
-  background: var(--elev);
-  color: var(--txt);
-  font-family: inherit;
-  font-size: 13px;
-  font-weight: 700;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-}
-
-.sample:hover {
-  border-color: var(--dim2);
+  --btn-py: 12px;
+  --btn-px: 12px;
+  --btn-radius: 11px;
+  --btn-gap: 8px;
 }
 
 .sampleDiamond {

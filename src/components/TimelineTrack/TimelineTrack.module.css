@@ -34,22 +34,10 @@
 }
 
 .add {
-  width: 20px;
-  height: 20px;
-  flex: none;
-  border-radius: 6px;
-  border: 1px solid var(--line);
-  background: var(--elev);
-  color: var(--dim);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.add:hover {
-  color: var(--acc2);
-  border-color: var(--acc);
+  --btn-square: 20px;
+  --btn-radius: 6px;
+  --btn-fg-hover: var(--acc2);
+  --btn-bd-hover: var(--acc);
 }
 
 .lane {

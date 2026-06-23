@@ -18,6 +18,7 @@ import {
   type NodeBaseline,
   type ElementVisual,
 } from '@/core/elementVisual';
+import Button from '@/atoms/Button/Button.vue';
 import styles from './CanvasStage.module.css';
 
 // Renders the inlined SVG: click-to-select, wheel zoom + drag pan (M1, Epic 4),
@@ -244,20 +245,21 @@ function setPattern(pattern: BgPattern): void {
 <template>
   <section :class="styles.canvas" data-testid="canvas-stage">
     <div :class="styles.controls">
-      <button
-        type="button"
-        :class="[styles.ctrl, debug ? styles.active : '']"
+      <Button
+        variant="ghost"
+        :class="[styles.glass, styles.ctrlBtn]"
+        :active="debug"
         title="Disable animation to show the original SVG for easier shape selection"
         @click="debug = !debug"
       >
         <Clapperboard :size="14" :stroke-width="1.3" />
         Disable animation
-      </button>
+      </Button>
 
       <div :class="styles.ctrlWrap">
-        <button
-          type="button"
-          :class="styles.ctrl"
+        <Button
+          variant="ghost"
+          :class="[styles.glass, styles.ctrlBtn]"
           title="Background pattern"
           @click="bgMenuOpen = !bgMenuOpen"
         >
@@ -268,7 +270,7 @@ function setPattern(pattern: BgPattern): void {
             :stroke-width="1.5"
             :class="[styles.chev, bgMenuOpen ? styles.open : '']"
           />
-        </button>
+        </Button>
         <template v-if="bgMenuOpen">
           <div :class="styles.backdrop" @click="bgMenuOpen = false" />
           <div :class="styles.menu">
@@ -296,14 +298,14 @@ function setPattern(pattern: BgPattern): void {
         />
       </label>
 
-      <button
-        type="button"
-        :class="[styles.ctrl, styles.icon]"
+      <Button
+        variant="icon"
+        :class="[styles.glass, styles.ctrlIcon]"
         title="Reset background color"
         @click="bgColor = DEFAULT_BG"
       >
         <RotateCcw :size="14" :stroke-width="1.4" />
-      </button>
+      </Button>
     </div>
 
     <div
@@ -324,9 +326,9 @@ function setPattern(pattern: BgPattern): void {
 
     <div v-if="viewChanged" :class="styles.view" data-testid="view-indicator">
       <span :class="styles.zoom">{{ zoomPct }}%</span>
-      <button type="button" :class="styles.reset" data-testid="reset-view" @click="resetView">
+      <Button variant="ghost" :class="styles.resetView" data-testid="reset-view" @click="resetView">
         Reset view
-      </button>
+      </Button>
     </div>
   </section>
 </template>

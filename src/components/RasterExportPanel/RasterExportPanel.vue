@@ -4,6 +4,7 @@ import { Download, Loader, Film, Square } from '@lucide/vue';
 import { useDocumentStore } from '@/stores/document';
 import { exportRaster, type RasterFormat } from '@/render/rasterExport';
 import { isWebmSupported } from '@/render/encodeWebm';
+import Button from '@/atoms/Button/Button.vue';
 import styles from './RasterExportPanel.module.css';
 
 // Render-and-download panel for the raster export formats (GIF, WebM video).
@@ -210,37 +211,38 @@ onBeforeUnmount(revokeResult);
       </div>
 
       <div :class="styles.actions">
-        <button
+        <Button
           v-if="phase === 'rendering'"
-          type="button"
+          variant="ghost"
           :class="styles.btn"
           data-testid="raster-cancel"
           @click="cancel"
         >
           <Square :size="13" :stroke-width="2" />
           Cancel
-        </button>
-        <button
+        </Button>
+        <Button
           v-else
-          type="button"
-          :class="[styles.btn, styles.primary]"
+          variant="ghost"
+          accent
+          :class="styles.btn"
           data-testid="raster-render"
           @click="render"
         >
           <Film :size="14" :stroke-width="1.7" />
           {{ phase === 'done' ? 'Re-render' : `Render ${formatLabel}` }}
-        </button>
+        </Button>
 
-        <button
+        <Button
           v-if="phase === 'done'"
-          type="button"
+          variant="ghost"
           :class="styles.btn"
           data-testid="raster-download"
           @click="download"
         >
           <Download :size="14" :stroke-width="1.7" />
           {{ downloadName }} · {{ formatSize(resultSize) }}
-        </button>
+        </Button>
       </div>
     </template>
   </div>

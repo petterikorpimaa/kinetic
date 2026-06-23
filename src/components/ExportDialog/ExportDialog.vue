@@ -5,6 +5,7 @@ import { useDocumentStore } from '@/stores/document';
 import { exportCss } from '@/core/cssExport';
 import { exportGsap } from '@/core/gsapExport';
 import RasterExportPanel from '../RasterExportPanel/RasterExportPanel.vue';
+import Button from '@/atoms/Button/Button.vue';
 import styles from './ExportDialog.module.css';
 
 type CodeFormat = 'svg' | 'css' | 'gsap';
@@ -95,9 +96,9 @@ onBeforeUnmount(() => {
             Clean, pasteable code — sampled from the same engine as the editor.
           </p>
         </div>
-        <button type="button" :class="styles.close" title="Close" @click="emit('close')">
+        <Button variant="icon" :class="styles.close" title="Close" @click="emit('close')">
           <X :size="15" :stroke-width="1.6" />
-        </button>
+        </Button>
       </div>
 
       <div :class="styles.bar">
@@ -117,8 +118,8 @@ onBeforeUnmount(() => {
         </div>
 
         <div v-if="isCodeFormat(format)" :class="styles.actions">
-          <button
-            type="button"
+          <Button
+            variant="ghost"
             :class="styles.action"
             title="Download"
             data-testid="export-download"
@@ -126,16 +127,17 @@ onBeforeUnmount(() => {
           >
             <Download :size="14" :stroke-width="1.6" />
             <span>{{ downloadName }}</span>
-          </button>
-          <button
-            type="button"
-            :class="[styles.action, styles.primary, copied ? styles.done : '']"
+          </Button>
+          <Button
+            variant="ghost"
+            accent
+            :class="styles.action"
             data-testid="export-copy"
             @click="copy"
           >
             <component :is="copied ? Check : Copy" :size="14" :stroke-width="1.7" />
             <span>{{ copied ? 'Copied' : `Copy ${format.toUpperCase()}` }}</span>
-          </button>
+          </Button>
         </div>
       </div>
 

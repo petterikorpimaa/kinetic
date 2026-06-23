@@ -20,4 +20,13 @@ export default defineConfigWithVueTs(
   pluginVue.configs['flat/essential'],
   vueTsConfigs.recommended,
   skipFormatting,
+  {
+    // Design-system primitives in atoms/ are intentionally single-word
+    // (Button, Modal, Spinner, Tabs, …), so this Vue rule doesn't apply there.
+    name: 'app/atoms-single-word',
+    files: ['src/atoms/**/*.vue'],
+    rules: {
+      'vue/multi-word-component-names': 'off',
+    },
+  },
 );

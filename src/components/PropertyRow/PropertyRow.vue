@@ -6,6 +6,7 @@ import type { AnyTrack, NumericTrack, ColorTrack } from '@/types/track';
 import { sampleNumber, sampleColor, hasKeyframeAt } from '@/core/animation';
 import { normalizeHex } from '@/core/color';
 import { useDocumentStore } from '@/stores/document';
+import Button from '@/atoms/Button/Button.vue';
 import styles from './PropertyRow.module.css';
 
 // One Inspector property row (M2, Epic 6): value control, add-keyframe diamond,
@@ -117,24 +118,28 @@ function selectAll(event: FocusEvent): void {
       </template>
     </div>
 
-    <button
-      type="button"
-      :class="[styles.key, isKeyed ? styles.active : '']"
+    <Button
+      variant="icon"
+      :class="styles.key"
+      :active="isKeyed"
+      :style="{ '--btn-bg': isKeyed ? '#14b8a61f' : 'transparent' }"
       :data-testid="`prop-key-${def.key}`"
       :data-active="isKeyed"
       title="Add keyframe at playhead"
       @click="addKeyframe"
     >
       <span :class="styles.diamond">◆</span>
-    </button>
-    <button
-      type="button"
+    </Button>
+    <Button
+      variant="icon"
+      plain
+      danger
       :class="styles.remove"
       :data-testid="`prop-remove-${def.key}`"
       title="Remove property"
       @click="remove"
     >
       ×
-    </button>
+    </Button>
   </div>
 </template>

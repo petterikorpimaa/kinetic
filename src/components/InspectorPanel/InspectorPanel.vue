@@ -7,6 +7,7 @@ import { PROPERTY_DEFS, DROP_SHADOW_MEMBERS, DROP_SHADOW_LABEL } from '@/core/pr
 import PropertyRow from '../PropertyRow/PropertyRow.vue';
 import AddPropertyMenu from '../AddPropertyMenu/AddPropertyMenu.vue';
 import EasingEditor from '../EasingEditor/EasingEditor.vue';
+import Button from '@/atoms/Button/Button.vue';
 import styles from './InspectorPanel.module.css';
 
 // Inspector (M2, Epic 6): active property rows for the selected element, value
@@ -70,14 +71,9 @@ watch(selectedId, () => {
           Editing locked — multiple keyframes selected
         </div>
       </div>
-      <button
-        type="button"
-        :class="styles.iconBtn"
-        title="Collapse panel"
-        @click="$emit('collapse')"
-      >
+      <Button variant="icon" size="sm" title="Collapse panel" @click="$emit('collapse')">
         <ChevronLeft :size="13" :stroke-width="1.4" />
-      </button>
+      </Button>
     </div>
 
     <template v-if="selected">
@@ -106,15 +102,17 @@ watch(selectedId, () => {
               />
               {{ DROP_SHADOW_LABEL }}
             </button>
-            <button
-              type="button"
+            <Button
+              variant="icon"
+              plain
+              danger
               :class="styles.shadowRemove"
               data-testid="dropshadow-remove"
               title="Remove drop shadow"
               @click="removeDropShadow"
             >
               ×
-            </button>
+            </Button>
           </div>
           <PropertyRow
             v-for="row in shadowRows"
@@ -132,15 +130,16 @@ watch(selectedId, () => {
         </p>
 
         <div :class="styles.addWrap">
-          <button
-            type="button"
+          <Button
+            variant="dashed"
+            block
             :class="styles.add"
             data-testid="add-property"
             @click="addOpen = !addOpen"
           >
             <Plus :size="15" :stroke-width="1.8" />
             Add property
-          </button>
+          </Button>
           <AddPropertyMenu
             v-if="addOpen"
             :element-id="selected.id"

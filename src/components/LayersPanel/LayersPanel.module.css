@@ -66,24 +66,6 @@
   white-space: nowrap;
 }
 
-.iconBtn {
-  width: 24px;
-  height: 24px;
-  flex: none;
-  border-radius: 7px;
-  border: 1px solid var(--line);
-  background: var(--elev);
-  color: var(--dim);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.iconBtn:hover {
-  color: var(--txt);
-}
-
 .body {
   flex: 1;
   overflow-y: auto;
@@ -142,23 +124,9 @@
   box-shadow: 0 0 6px -1px var(--acc);
 }
 
+/* Eye sits a touch tighter than the default icon radius. */
 .eye {
-  width: 24px;
-  height: 24px;
-  flex: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: none;
-  border-radius: 6px;
-  background: none;
-  color: var(--dim2);
-  cursor: pointer;
-}
-
-.eye:hover {
-  color: var(--txt);
-  background: #ffffff0d;
+  --btn-radius: 6px;
 }
 
 .icon {

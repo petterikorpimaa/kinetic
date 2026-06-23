@@ -79,28 +79,11 @@
   cursor: pointer;
 }
 
+/* Add-keyframe ◆ — accent fill comes from :active; resting bg stays clear. */
 .key {
-  width: 28px;
-  height: 28px;
-  flex: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 6px;
-  border: 1px solid var(--line);
-  background: none;
-  color: var(--dim2);
-  cursor: pointer;
-}
-
-.key:hover {
-  color: var(--txt);
-}
-
-.active {
-  color: var(--acc2);
-  border-color: var(--acc);
-  background: #14b8a61f;
+  --btn-square: 28px;
+  --btn-radius: 6px;
+  --btn-fg: var(--dim2);
 }
 
 .diamond {
@@ -108,23 +91,10 @@
   line-height: 1;
 }
 
+/* Remove × — a touch taller than wide to line up with the row controls. */
 .remove {
-  width: 24px;
-  height: 28px;
-  flex: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: none;
-  border-radius: 6px;
-  background: none;
-  color: var(--dim2);
-  font-size: 15px;
-  line-height: 1;
-  cursor: pointer;
-}
-
-.remove:hover {
-  color: #ff7a90;
-  background: #ffffff14;
+  --btn-square: 24px;
+  --btn-sq-h: 28px;
+  --btn-radius: 6px;
+  --btn-fs: 15px;
 }
