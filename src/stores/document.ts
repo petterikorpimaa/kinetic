@@ -5,6 +5,8 @@ import type { AnimatableProperty, NumericProperty, ColorProperty, AnyTrack } fro
 import type { CubicBezierEasing } from '@/types/easing';
 import { createEmptyDocument } from '@/types';
 import { processSvg } from '@/core/processSvg';
+import { SAMPLE_SVG, SAMPLE_FILE_NAME } from '@/core/sample';
+import { buildSampleTracks, SAMPLE_SELECTED_ELEMENT_ID } from '@/core/sampleAnimation';
 import { DEFAULT_EASING } from '@/core/presets';
 import { snapTime, clampTime } from '@/core/timeline';
 import { produceWithPatches, type Draft } from '@/core/immer';
@@ -334,6 +336,25 @@ export const useDocumentStore = defineStore('document', () => {
     });
   }
 
+  /**
+   * Load the bundled sample SVG with its example animation seeded (SVG-155), and
+   * select an animated element so the timeline shows keyframes immediately. Used
+   * by the initial fallback and the "Load the sample animation" button; user
+   * imports go through importSvg and never carry the example tracks.
+   */
+  function loadSample(): void {
+    const processed = processSvg(SAMPLE_SVG);
+    const seeded = processed.elements.find((element) => element.id === SAMPLE_SELECTED_ELEMENT_ID);
+    loadDocument({
+      ...createEmptyDocument(newId(), SAMPLE_FILE_NAME),
+      svgMarkup: processed.svgMarkup,
+      viewBox: processed.viewBox,
+      elements: processed.elements,
+      tracks: buildSampleTracks(),
+      selectedElementId: seeded?.id ?? processed.elements[0]?.id ?? null,
+    });
+  }
+
   return {
     document,
     history,
@@ -363,5 +384,6 @@ export const useDocumentStore = defineStore('document', () => {
     redo,
     loadDocument,
     importSvg,
+    loadSample,
   };
 });

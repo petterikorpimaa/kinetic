@@ -5,7 +5,6 @@ import { useDocumentStore } from '@/stores/document';
 import { useTimelineKeyboard } from '@/composables/useTimelineKeyboard';
 import { useHistoryKeyboard } from '@/composables/useHistoryKeyboard';
 import { useAutosave } from '@/composables/useAutosave';
-import { SAMPLE_SVG, SAMPLE_FILE_NAME } from '@/core/sample';
 import TopBar from '../TopBar/TopBar.vue';
 import LayersPanel from '../LayersPanel/LayersPanel.vue';
 import CanvasStage from '../CanvasStage/CanvasStage.vue';
@@ -28,9 +27,10 @@ const inspectorOpen = ref(true);
 const importOpen = ref(false);
 const exportOpen = ref(false);
 
-// Fall back to the sample scene only when nothing was restored from storage.
+// Fall back to the sample scene (with its example animation) only when nothing
+// was restored from storage.
 onMounted(() => {
-  if (!restored && !store.document.svgMarkup) store.importSvg(SAMPLE_SVG, SAMPLE_FILE_NAME);
+  if (!restored && !store.document.svgMarkup) store.loadSample();
 });
 
 function onImport(): void {

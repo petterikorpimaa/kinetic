@@ -308,4 +308,34 @@ describe('useDocumentStore', () => {
     expect(store.trackFor('a', 'x')).toBeUndefined();
     expect(store.canUndo).toBe(false);
   });
+
+  it('loadSample seeds the example animation and selects an animated element', () => {
+    const store = useDocumentStore();
+    store.loadSample();
+    expect(store.document.elements.map((element) => element.id)).toEqual([
+      'plate',
+      'ring',
+      'orb',
+      'play',
+    ]);
+    expect(store.document.tracks).toHaveLength(3);
+    // The selected element must own a track so the timeline shows keyframes.
+    const selected = store.document.selectedElementId;
+    expect(selected).not.toBeNull();
+    expect(store.tracksForElement(selected!).length).toBeGreaterThan(0);
+  });
+
+  it('loadSample resets history so the seeded animation is the baseline', () => {
+    const store = useDocumentStore();
+    store.loadSample();
+    expect(store.canUndo).toBe(false);
+  });
+
+  it('a user import does not carry over the example animation', () => {
+    const store = useDocumentStore();
+    store.loadSample();
+    expect(store.document.tracks).toHaveLength(3);
+    store.importSvg('<svg viewBox="0 0 10 10"><circle id="dot"/></svg>', 'mine.svg');
+    expect(store.document.tracks).toEqual([]);
+  });
 });

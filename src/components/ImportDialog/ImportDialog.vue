@@ -2,7 +2,6 @@
 import { ref } from 'vue';
 import { UploadCloud } from '@lucide/vue';
 import { useDocumentStore } from '@/stores/document';
-import { SAMPLE_SVG, SAMPLE_FILE_NAME } from '@/core/sample';
 import Button from '@/atoms/Button/Button.vue';
 import Modal from '@/atoms/Modal/Modal.vue';
 import styles from './ImportDialog.module.css';
@@ -44,7 +43,8 @@ function onDrop(event: DragEvent): void {
 }
 
 function loadSample(): void {
-  importText(SAMPLE_SVG, SAMPLE_FILE_NAME);
+  store.loadSample();
+  emit('close');
 }
 </script>
 

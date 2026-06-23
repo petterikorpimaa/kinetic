@@ -2,6 +2,9 @@ import { test, expect } from '@playwright/test';
 
 test('add a property, edit its value, and see it applied on the canvas', async ({ page }) => {
   await page.goto('/');
+  // The sample ships an example animation; author on the un-animated Plate layer
+  // for a clean slate (SVG-155).
+  await page.getByTestId('layers-panel').getByRole('button', { name: 'Plate' }).click();
 
   const inspector = page.getByTestId('inspector-panel');
   await expect(inspector).toContainText('Plate');
@@ -24,6 +27,9 @@ test('add a property, edit its value, and see it applied on the canvas', async (
 
 test('the add-property menu hides already-active properties', async ({ page }) => {
   await page.goto('/');
+  // The sample ships an example animation; author on the un-animated Plate layer
+  // for a clean slate (SVG-155).
+  await page.getByTestId('layers-panel').getByRole('button', { name: 'Plate' }).click();
 
   await page.getByTestId('add-property').click();
   await page.getByTestId('add-prop-opacity').click();
@@ -36,6 +42,9 @@ test('the add-property menu hides already-active properties', async ({ page }) =
 
 test('remove a property clears its row and resets the count', async ({ page }) => {
   await page.goto('/');
+  // The sample ships an example animation; author on the un-animated Plate layer
+  // for a clean slate (SVG-155).
+  await page.getByTestId('layers-panel').getByRole('button', { name: 'Plate' }).click();
 
   await page.getByTestId('add-property').click();
   await page.getByTestId('add-prop-opacity').click();
@@ -49,6 +58,9 @@ test('remove a property clears its row and resets the count', async ({ page }) =
 
 test('a colour property accepts a hex value', async ({ page }) => {
   await page.goto('/');
+  // The sample ships an example animation; author on the un-animated Plate layer
+  // for a clean slate (SVG-155).
+  await page.getByTestId('layers-panel').getByRole('button', { name: 'Plate' }).click();
 
   await page.getByTestId('add-property').click();
   await page.getByTestId('add-prop-fill').click();

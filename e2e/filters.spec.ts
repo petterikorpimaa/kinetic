@@ -5,6 +5,9 @@ import { test, expect } from '@playwright/test';
 
 test('adding a blur filter composes a CSS filter on the shape', async ({ page }) => {
   await page.goto('/');
+  // The sample ships an example animation; author on the un-animated Plate layer
+  // for a clean slate (SVG-155).
+  await page.getByTestId('layers-panel').getByRole('button', { name: 'Plate' }).click();
 
   await page.getByTestId('add-property').click();
   await page.getByTestId('add-prop-blur').click();
@@ -19,6 +22,9 @@ test('adding a blur filter composes a CSS filter on the shape', async ({ page })
 
 test('adding drop-shadow creates one expandable group and applies a shadow', async ({ page }) => {
   await page.goto('/');
+  // The sample ships an example animation; author on the un-animated Plate layer
+  // for a clean slate (SVG-155).
+  await page.getByTestId('layers-panel').getByRole('button', { name: 'Plate' }).click();
 
   await page.getByTestId('add-property').click();
   await page.getByTestId('add-prop-dropShadow').click();

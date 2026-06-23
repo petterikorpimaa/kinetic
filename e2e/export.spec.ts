@@ -6,6 +6,9 @@ import { test, expect } from '@playwright/test';
 test('animate a property and export it to CSS and GSAP', async ({ page, context }) => {
   await context.grantPermissions(['clipboard-read', 'clipboard-write']);
   await page.goto('/');
+  // The sample ships an example animation; author on the un-animated Plate layer
+  // for a clean slate (SVG-155).
+  await page.getByTestId('layers-panel').getByRole('button', { name: 'Plate' }).click();
 
   // Add Position X and lay down two keyframes at different times.
   await page.getByTestId('add-property').click();

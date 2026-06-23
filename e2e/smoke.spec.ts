@@ -6,11 +6,13 @@ test('boots with the sample scene loaded', async ({ page }) => {
   await expect(page.getByTestId('editor-layout')).toBeVisible();
   await expect(page.getByTestId('topbar')).toContainText('Kinetic');
 
-  // Sample SVG auto-loads: layers populate and the first shape is selected.
+  // Sample SVG auto-loads with its example animation; the animated Orb is selected.
   await expect(page.getByTestId('layers-panel')).toContainText('Orb');
   await expect(page.getByTestId('canvas-stage').locator('[data-anim-id="orb"]')).toBeVisible();
-  await expect(page.getByTestId('inspector-panel')).toContainText('Plate');
+  await expect(page.getByTestId('inspector-panel')).toContainText('Orb');
   await expect(page.getByTestId('timeline-panel')).toBeVisible();
+  // Seeded keyframes show on the timeline straight away — no user setup (SVG-155).
+  await expect(page.getByTestId('timeline-track').first()).toBeVisible();
 });
 
 test('selecting a layer updates the inspector', async ({ page }) => {
