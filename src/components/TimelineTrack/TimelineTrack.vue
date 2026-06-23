@@ -6,6 +6,7 @@ import { usePlaybackStore } from '@/stores/playback';
 import { getPropertyDef } from '@/core/properties';
 import { sampleNumber, sampleColor } from '@/core/animation';
 import { timeToFraction } from '@/core/timeline';
+import { useKeyframeDrag } from '@/composables/useKeyframeDrag';
 import type { AnyTrack, NumericTrack, ColorTrack } from '@/types/track';
 import Button from '@/atoms/Button/Button.vue';
 import styles from './TimelineTrack.module.css';
@@ -17,6 +18,8 @@ import styles from './TimelineTrack.module.css';
 const props = defineProps<{ track: AnyTrack }>();
 const store = useDocumentStore();
 const playback = usePlaybackStore();
+// Shared across lanes so every selected keyframe previews the drag together.
+const { offsetSeconds, setOffset } = useKeyframeDrag();
 const laneRef = ref<HTMLElement>();
 
 const DRAG_THRESHOLD_PX = 2;
@@ -26,12 +29,12 @@ const label = computed(() => def.value?.label ?? props.track.property);
 const count = computed(() => props.track.keyframes.length);
 const duration = computed(() => store.document.duration);
 
-const dragging = ref(false);
-const dragSeconds = ref(0);
+const dragging = computed(() => offsetSeconds.value !== null);
 
 /** Horizontal position (%) of a keyframe, including the live drag preview. */
 function leftPercent(keyframe: { id: string; time: number }): number {
-  const shift = dragging.value && store.isKeyframeSelected(keyframe.id) ? dragSeconds.value : 0;
+  const offset = offsetSeconds.value;
+  const shift = offset !== null && store.isKeyframeSelected(keyframe.id) ? offset : 0;
   return timeToFraction(keyframe.time + shift, duration.value) * 100;
 }
 
@@ -64,20 +67,17 @@ function onKeyframeDown(event: PointerEvent, keyframe: { id: string }): void {
   const width = lane ? lane.getBoundingClientRect().width : 1;
   const startX = event.clientX;
   let moved = false;
-  dragging.value = true;
-  dragSeconds.value = 0;
 
   function onMove(move: PointerEvent): void {
     const dx = move.clientX - startX;
     if (Math.abs(dx) > DRAG_THRESHOLD_PX) moved = true;
-    dragSeconds.value = (dx / width) * duration.value;
+    setOffset((dx / width) * duration.value);
   }
   function onUp(): void {
     window.removeEventListener('pointermove', onMove);
     window.removeEventListener('pointerup', onUp);
-    if (moved) store.moveSelectedKeyframes(dragSeconds.value, duration.value);
-    dragging.value = false;
-    dragSeconds.value = 0;
+    if (moved) store.moveSelectedKeyframes(offsetSeconds.value ?? 0, duration.value);
+    setOffset(null);
   }
   window.addEventListener('pointermove', onMove);
   window.addEventListener('pointerup', onUp);

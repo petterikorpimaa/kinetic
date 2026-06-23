@@ -296,6 +296,20 @@ describe('useDocumentStore', () => {
     expect(store.trackFor('a', 'x')?.keyframes.map((k) => k.time)).toEqual([0, 1]);
   });
 
+  it('moves keyframes selected across different tracks together', () => {
+    const store = useDocumentStore();
+    store.loadDocument(documentWithElements(['a']));
+    store.setNumberValue('a', 'x', 0, 0);
+    store.setNumberValue('a', 'y', 0, 0);
+    const xId = store.trackFor('a', 'x')!.keyframes[0]!.id;
+    const yId = store.trackFor('a', 'y')!.keyframes[0]!.id;
+    store.selectKeyframes([xId, yId]);
+
+    store.moveSelectedKeyframes(1, 4);
+    expect(store.trackFor('a', 'x')!.keyframes[0]!.time).toBe(1);
+    expect(store.trackFor('a', 'y')!.keyframes[0]!.time).toBe(1);
+  });
+
   it('clamps a moved keyframe to the duration', () => {
     const store = useDocumentStore();
     store.loadDocument(documentWithElements(['a']));

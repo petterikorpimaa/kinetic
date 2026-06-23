@@ -1,9 +1,11 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { mount } from '@vue/test-utils';
 import { createPinia, setActivePinia, type Pinia } from 'pinia';
+import { nextTick } from 'vue';
 import TimelineTrack from './TimelineTrack.vue';
 import { useDocumentStore } from '@/stores/document';
 import { usePlaybackStore } from '@/stores/playback';
+import { useKeyframeDrag } from '@/composables/useKeyframeDrag';
 import { createEmptyDocument } from '@/types';
 import type { AnimationDocument } from '@/types';
 import type { SceneElement } from '@/types/element';
@@ -14,6 +16,7 @@ let pinia: Pinia;
 beforeEach(() => {
   pinia = createPinia();
   setActivePinia(pinia);
+  useKeyframeDrag().setOffset(null); // reset the shared drag offset between tests
 });
 
 function elementFixture(id: string): SceneElement {
@@ -66,5 +69,19 @@ describe('TimelineTrack', () => {
 
     await wrapper.find('[data-testid="lane-add-keyframe"]').trigger('click');
     expect(store.trackFor('a', 'x')?.keyframes.map((k) => k.time)).toEqual([0, 0.5, 1]);
+  });
+
+  it('previews the shared drag offset on selected keyframes (so other lanes move too)', async () => {
+    const { store, track, wrapper } = setup(); // duration 3s; keyframes at 0 and 1
+    store.selectKeyframe(track.keyframes[0]!.id); // select only the first
+    // Simulate a drag happening in another lane shifting the selection by +0.6s.
+    useKeyframeDrag().setOffset(0.6);
+    await nextTick();
+
+    const diamonds = wrapper.findAll('[data-testid="keyframe"]');
+    // Selected keyframe previews at (0 + 0.6) / 3 = 20%.
+    expect(diamonds[0]!.attributes('style')).toContain('left: 20%');
+    // Unselected keyframe stays put at 1 / 3 ≈ 33.33%.
+    expect(diamonds[1]!.attributes('style')).toContain('left: 33.3');
   });
 });
