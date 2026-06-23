@@ -1,7 +1,12 @@
 import { describe, it, expect } from 'vitest';
 import type { NumericTrack } from '../types/track';
 import type { CubicBezierEasing } from '../types/easing';
-import { unionKeyframeTimes, tracksAreAligned, frameTimes } from './exportSampling';
+import {
+  unionKeyframeTimes,
+  tracksAreAligned,
+  mergedChannelStops,
+  frameTimes,
+} from './exportSampling';
 
 const EASE_A: CubicBezierEasing = [0.42, 0, 0.58, 1];
 const EASE_B: CubicBezierEasing = [0, 0, 1, 1];
@@ -69,6 +74,47 @@ describe('tracksAreAligned', () => {
 
   it('is aligned for an empty channel', () => {
     expect(tracksAreAligned([])).toBe(true);
+  });
+});
+
+describe('mergedChannelStops', () => {
+  it('merges disjoint members into clean per-segment stops (rotate, then scale)', () => {
+    // rotation animates over [0, 0.5]; scale over [1, 1.5]; duration 2.
+    const plan = mergedChannelStops(
+      [track('rotation', [0, 0.5], EASE_A), track('scale', [1, 1.5], EASE_B)],
+      2,
+    );
+    expect(plan).not.toBeNull();
+    expect(plan!.map((s) => s.time)).toEqual([0, 0.5, 1, 1.5, 2]);
+    expect(plan![0]!.easing).toEqual(EASE_A); // rotation segment
+    expect(plan![1]!.easing).toBeUndefined(); // 0.5→1 holds (constant)
+    expect(plan![2]!.easing).toEqual(EASE_B); // scale segment
+    expect(plan![3]!.easing).toBeUndefined(); // 1.5→2 holds
+    expect(plan![4]!.easing).toBeUndefined(); // last stop
+  });
+
+  it('bakes (null) when one member keyframe splits another member eased segment', () => {
+    // y's keyframe at 1 falls inside x's changing [0, 2] segment.
+    expect(mergedChannelStops([track('x', [0, 2]), track('y', [0, 1])], 2)).toBeNull();
+  });
+
+  it('bakes (null) when two members ease differently in the same segment', () => {
+    expect(
+      mergedChannelStops([track('x', [0, 1], EASE_A), track('y', [0, 1], EASE_B)], 1),
+    ).toBeNull();
+  });
+
+  it('stays clean for a single animated member plus a constant single-keyframe one', () => {
+    const plan = mergedChannelStops([track('x', [0, 1], EASE_A), track('scale', [0.5])], 1);
+    expect(plan).not.toBeNull();
+    expect(plan!.map((s) => s.time)).toEqual([0, 1]); // the constant track adds no stops
+    expect(plan![0]!.easing).toEqual(EASE_A);
+  });
+
+  it('shares the easing when aligned members ease the same', () => {
+    const plan = mergedChannelStops([track('x', [0, 1], EASE_A), track('y', [0, 1], EASE_A)], 1);
+    expect(plan!.map((s) => s.time)).toEqual([0, 1]);
+    expect(plan![0]!.easing).toEqual(EASE_A);
   });
 });
 

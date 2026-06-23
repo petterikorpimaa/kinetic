@@ -4,6 +4,9 @@ import type { SceneElement } from '../types/element';
 import type { AnyTrack, NumericTrack, ColorTrack } from '../types/track';
 import type { CubicBezierEasing } from '../types/easing';
 import { exportCss } from './cssExport';
+import { SAMPLE_SVG } from './sample';
+import { buildSampleTracks, SAMPLE_DURATION } from './sampleAnimation';
+import { processSvg } from './processSvg';
 
 const EASE_INOUT: CubicBezierEasing = [0.42, 0, 0.58, 1];
 const EASE_OUT: CubicBezierEasing = [0, 0, 0.58, 1];
@@ -218,6 +221,55 @@ describe('exportCss — transform channel', () => {
     // Baked stops carry no per-stop timing function (linear between dense stops).
     const block = css.slice(css.indexOf('@keyframes orb-transform'));
     expect(block).not.toContain('animation-timing-function');
+  });
+
+  it('merges disjoint sub-tracks (rotate then scale) into clean stops, not baked frames', () => {
+    const css = exportCss(
+      doc(
+        [
+          numTrack('rotation', [
+            [0, 0, EASE_OUT],
+            [0.5, 180],
+          ]),
+          numTrack('scale', [
+            [0.8, 1, EASE_INOUT],
+            [1.6, 1.3],
+          ]),
+        ],
+        { duration: 2, fps: 60 },
+      ),
+    );
+    const block = css.slice(css.indexOf('@keyframes orb-transform'));
+    // Five clean stops at the union keyframe times — not ~120 baked frames.
+    expect((block.match(/%\s*\{\s*transform:/g) ?? []).length).toBe(5);
+    expect(css).toContain(
+      '0% { transform: rotate(0deg) scale(1); animation-timing-function: cubic-bezier(0, 0, 0.58, 1); }',
+    );
+    expect(css).toContain('25% { transform: rotate(180deg) scale(1); }'); // rotation done, scale not started
+    expect(css).toContain(
+      '40% { transform: rotate(180deg) scale(1); animation-timing-function: cubic-bezier(0.42, 0, 0.58, 1); }',
+    );
+    expect(css).toContain('80% { transform: rotate(180deg) scale(1.3); }');
+    expect(css).toContain('100% { transform: rotate(180deg) scale(1.3); }');
+  });
+});
+
+describe('exportCss — sample animation', () => {
+  it('exports the seeded sample as clean keyframes, not hundreds of baked frames', () => {
+    const processed = processSvg(SAMPLE_SVG);
+    const css = exportCss(
+      doc(buildSampleTracks(), {
+        svgMarkup: processed.svgMarkup,
+        viewBox: processed.viewBox,
+        elements: processed.elements,
+        duration: SAMPLE_DURATION,
+      }),
+    );
+    const start = css.indexOf('@keyframes inner-transform');
+    expect(start).toBeGreaterThanOrEqual(0);
+    const block = css.slice(start, css.indexOf('\n}', start));
+    // The rotate-then-scale transform used to bake ~96 frames; now a handful.
+    expect((block.match(/%\s*\{\s*transform:/g) ?? []).length).toBeLessThanOrEqual(8);
   });
 });
 

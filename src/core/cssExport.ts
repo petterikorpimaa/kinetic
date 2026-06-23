@@ -6,7 +6,7 @@ import { sampleNumber, sampleColor, strokeDashOffset } from './animation';
 import { scalarFilterCss, dropShadowCss, composeFilter, SCALAR_FILTERS } from './filters';
 import { getPropertyDef } from './properties';
 import { cubicBezierCss } from './easingCurve';
-import { tracksAreAligned, frameTimes } from './exportSampling';
+import { mergedChannelStops, frameTimes } from './exportSampling';
 import { round3 as num } from './format';
 
 /**
@@ -26,7 +26,6 @@ import { round3 as num } from './format';
  * matrices are equal because translations commute).
  */
 
-const TIME_EPSILON = 1e-4;
 const TRANSFORM_PROPS: ReadonlySet<string> = new Set([
   'x',
   'y',
@@ -142,33 +141,6 @@ export function filterValue(tracks: readonly AnyTrack[], time: number): string {
   return composeFilter(parts);
 }
 
-/**
- * Sorted, epsilon-deduped stop times for a clean channel: the reference
- * (animated) track's keyframe times plus the 0 and duration boundaries. Only
- * the animated track's times are used — alignment guarantees every animated
- * member shares them, and pulling in a constant member's odd time would insert a
- * spurious linear stop mid-bezier-segment and diverge from the editor.
- */
-function cleanStopTimes(reference: AnyTrack, duration: number): number[] {
-  const times = [0, ...reference.keyframes.map((keyframe) => keyframe.time), duration].sort(
-    (a, b) => a - b,
-  );
-  const unique: number[] = [];
-  for (const time of times) {
-    const last = unique[unique.length - 1];
-    if (last === undefined || Math.abs(time - last) > TIME_EPSILON) unique.push(time);
-  }
-  return unique;
-}
-
-/** Outgoing easing for a clean stop: the reference track's keyframe easing, if any. */
-function cleanStopEasing(reference: AnyTrack, time: number): CubicBezierEasing | undefined {
-  const keyframes = reference.keyframes;
-  const index = keyframes.findIndex((keyframe) => Math.abs(keyframe.time - time) < TIME_EPSILON);
-  if (index >= 0 && index < keyframes.length - 1) return keyframes[index]!.easing;
-  return undefined;
-}
-
 /** Drop stops whose value equals both neighbours — collapses constant runs in baked output. */
 function dropConstantRuns(stops: readonly Stop[]): Stop[] {
   if (stops.length <= 2) return [...stops];
@@ -186,8 +158,9 @@ function dropConstantRuns(stops: readonly Stop[]): Stop[] {
 
 /**
  * Build the stops for an animated channel. Clean (per-segment cubic-bezier) when
- * the member tracks are aligned; baked per frame otherwise (DEC-8). `valueAt`
- * samples the merged property value at a time.
+ * the merged members can be expressed with one timing function per segment —
+ * including disjoint members such as rotate-then-scale; baked per frame otherwise
+ * (DEC-8). `valueAt` samples the merged property value at a time.
  */
 function buildStops(
   tracks: readonly AnyTrack[],
@@ -195,12 +168,12 @@ function buildStops(
   duration: number,
   fps: number,
 ): Stop[] {
-  if (tracksAreAligned(tracks)) {
-    const reference = tracks.find((track) => track.keyframes.length >= 2)!;
-    return cleanStopTimes(reference, duration).map((time) => ({
-      time,
-      value: valueAt(time),
-      easing: cleanStopEasing(reference, time),
+  const plan = mergedChannelStops(tracks, duration);
+  if (plan !== null) {
+    return plan.map((stop) => ({
+      time: stop.time,
+      value: valueAt(stop.time),
+      easing: stop.easing,
     }));
   }
   const stops = frameTimes(duration, fps).map((time) => ({ time, value: valueAt(time) }));
