@@ -2,6 +2,7 @@
 import { ref, computed, onMounted } from 'vue';
 import { ChevronLeft, ChevronRight } from '@lucide/vue';
 import { useDocumentStore } from '@/stores/document';
+import { usePlaybackStore } from '@/stores/playback';
 import { useTimelineKeyboard } from '@/composables/useTimelineKeyboard';
 import { useHistoryKeyboard } from '@/composables/useHistoryKeyboard';
 import { useAutosave } from '@/composables/useAutosave';
@@ -15,6 +16,7 @@ import ExportDialog from '../ExportDialog/ExportDialog.vue';
 import styles from './EditorLayout.module.css';
 
 const store = useDocumentStore();
+const playback = usePlaybackStore();
 const layerCount = computed(() => store.document.elements.length);
 
 useTimelineKeyboard();
@@ -28,9 +30,11 @@ const importOpen = ref(false);
 const exportOpen = ref(false);
 
 // Fall back to the sample scene (with its example animation) only when nothing
-// was restored from storage.
+// was restored from storage, then play by default so the animation is moving as
+// soon as the editor opens.
 onMounted(() => {
   if (!restored && !store.document.svgMarkup) store.loadSample();
+  playback.play(store.document.duration);
 });
 
 function onImport(): void {

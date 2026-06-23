@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { pausePlayback } from './helpers';
 
 test('boots with the sample scene loaded', async ({ page }) => {
   await page.goto('/');
@@ -23,6 +24,9 @@ test('selecting a layer updates the inspector', async ({ page }) => {
 
 test('clicking a shape on the canvas selects it', async ({ page }) => {
   await page.goto('/');
+  // The editor plays by default; pause so the ring holds still while we map a
+  // point on it to screen coords (a moving ring would slip out from the click).
+  await pausePlayback(page);
   // Rings draw on from empty, so scrub to where the outer ring is fully drawn
   // but not yet pulsing (≈1s into the 2s loop) before clicking it.
   const ruler = page.getByTestId('timeline-ruler');
