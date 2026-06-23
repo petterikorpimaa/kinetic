@@ -11,6 +11,9 @@ import {
   cubicBezierCss,
 } from '@/core/easingCurve';
 import type { CubicBezierEasing } from '@/types/easing';
+import SectionLabel from '@/atoms/SectionLabel/SectionLabel.vue';
+import EmptyState from '@/atoms/EmptyState/EmptyState.vue';
+import Chip from '@/atoms/Chip/Chip.vue';
 import styles from './EasingEditor.module.css';
 
 // Easing editor (M4, Epic 8): a collapsible Inspector section that edits the
@@ -125,7 +128,7 @@ function startHandleDrag(which: 1 | 2, event: PointerEvent): void {
 <template>
   <section :class="styles.easing" data-testid="easing-editor">
     <button type="button" :class="styles.head" @click="open = !open">
-      <span :class="styles.title">Easing</span>
+      <SectionLabel>Easing</SectionLabel>
       <span v-if="headerLabel" :class="styles.badge" data-testid="easing-label">{{
         headerLabel
       }}</span>
@@ -133,9 +136,9 @@ function startHandleDrag(which: 1 | 2, event: PointerEvent): void {
     </button>
 
     <div v-if="open" :class="styles.body">
-      <p v-if="count === 0" :class="styles.empty" data-testid="easing-empty">
+      <EmptyState v-if="count === 0" bordered :class="styles.prompt" data-testid="easing-empty">
         Select a keyframe on the timeline to edit its easing.
-      </p>
+      </EmptyState>
 
       <template v-else>
         <svg
@@ -187,21 +190,20 @@ function startHandleDrag(which: 1 | 2, event: PointerEvent): void {
           />
         </svg>
 
-        <p v-else :class="styles.multi" data-testid="easing-multi">
+        <EmptyState v-else bordered :class="styles.prompt" data-testid="easing-multi">
           {{ count }} keyframes selected — pick a preset to apply to all.
-        </p>
+        </EmptyState>
 
         <div :class="styles.presets">
-          <button
+          <Chip
             v-for="preset in presets"
             :key="preset.name"
-            type="button"
-            :class="[styles.preset, activePresetName === preset.name ? styles.active : '']"
+            :active="activePresetName === preset.name"
             :data-testid="`easing-preset-${preset.name}`"
             @click="applyPreset(preset.value)"
           >
             {{ preset.name }}
-          </button>
+          </Chip>
         </div>
 
         <div :class="styles.readout" data-testid="easing-readout">{{ cssText }}</div>

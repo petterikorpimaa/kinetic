@@ -1,0 +1,17 @@
+/* EmptyState — the single source of the "nothing here yet" hint (SVG-151).
+ * Centred text by default; `bordered` adds the dashed card border. Call sites
+ * override font size, colour and padding through --empty-* and add their own
+ * layout (margins, height, flex fill) on the same element. */
+
+.empty {
+  text-align: center;
+  color: var(--empty-fg, var(--dim2));
+  font-size: var(--empty-fs, 12px);
+  line-height: var(--empty-lh, 1.5);
+}
+
+.bordered {
+  padding: var(--empty-pad, 14px);
+  border: 1px dashed var(--line);
+  border-radius: var(--empty-radius, 11px);
+}

@@ -4,6 +4,8 @@ import { SkipBack, Play, Pause, Repeat } from '@lucide/vue';
 import { useDocumentStore } from '@/stores/document';
 import { usePlaybackStore } from '@/stores/playback';
 import Button from '@/atoms/Button/Button.vue';
+import Field from '@/atoms/Field/Field.vue';
+import SectionLabel from '@/atoms/SectionLabel/SectionLabel.vue';
 import styles from './TransportControls.module.css';
 
 // Transport row (M3, Epic 7/9): back-to-start, play/pause, loop, the live
@@ -62,8 +64,8 @@ function onDuration(event: Event): void {
     <div :class="styles.spacer" />
 
     <div :class="styles.duration">
-      <span :class="styles.durationLabel">Duration</span>
-      <input
+      <SectionLabel :class="styles.durationLabel">Duration</SectionLabel>
+      <Field
         type="number"
         min="0.5"
         max="12"

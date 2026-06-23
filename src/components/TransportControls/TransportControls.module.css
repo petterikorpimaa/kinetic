@@ -52,24 +52,19 @@
 }
 
 .durationLabel {
-  font-size: 11px;
-  color: var(--dim2);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  font-weight: 600;
+  --eyebrow-fs: 11px;
+  --eyebrow-ls: 0.08em;
+  --eyebrow-fw: 600;
 }
 
 .durationInput {
   width: 64px;
-  height: 30px;
-  padding: 0 9px;
-  border-radius: 8px;
-  border: 1px solid var(--line);
-  background: var(--track);
-  color: var(--txt);
-  font-size: 12px;
-  outline: none;
-  text-align: right;
+  --field-h: 30px;
+  --field-radius: 8px;
+  --field-bg: var(--track);
+  --field-font: var(--font-mono);
+  --field-fs: 12px;
+  --field-align: right;
 }
 
 .durationUnit {

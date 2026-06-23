@@ -39,15 +39,11 @@
 }
 
 .optField {
-  height: 32px;
   width: 96px;
-  padding: 0 9px;
-  border-radius: 8px;
-  border: 1px solid var(--line);
-  background: var(--elev);
-  color: var(--txt);
-  font-family: inherit;
-  font-size: 12px;
+  --field-h: 32px;
+  --field-radius: 8px;
+  --field-bg: var(--elev);
+  --field-fs: 12px;
 }
 
 .optBg {
@@ -58,18 +54,10 @@
 }
 
 .optColor {
-  width: 36px;
-  height: 28px;
-  padding: 0;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: none;
-  cursor: pointer;
-}
-
-.optColor:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
+  --swatch-w: 36px;
+  --swatch-h: 28px;
+  --swatch-radius: 8px;
+  --swatch-disabled-opacity: 0.4;
 }
 
 .optCheck {
@@ -128,32 +116,6 @@
   align-items: center;
   gap: 12px;
   width: min(80%, 320px);
-}
-
-.spin {
-  color: var(--acc2);
-  animation: raster-spin 0.9s linear infinite;
-}
-
-@keyframes raster-spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.bar {
-  width: 100%;
-  height: 6px;
-  border-radius: 999px;
-  background: var(--elev);
-  overflow: hidden;
-}
-
-.bar span {
-  display: block;
-  height: 100%;
-  background: var(--acc);
-  transition: width 0.15s ease;
 }
 
 .count {

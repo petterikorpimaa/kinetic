@@ -1,0 +1,13 @@
+/* Spinner — the single source of the loading spinner (SVG-153). The rotation
+ * keyframes stay local to this module; colour comes from --spinner-fg. */
+
+.spin {
+  color: var(--spinner-fg, var(--acc2));
+  animation: spinner-rotate 0.9s linear infinite;
+}
+
+@keyframes spinner-rotate {
+  to {
+    transform: rotate(360deg);
+  }
+}

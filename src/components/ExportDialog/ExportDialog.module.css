@@ -1,37 +1,9 @@
-.overlay {
-  position: fixed;
-  inset: 0;
-  background: #08080cdd;
-  backdrop-filter: blur(4px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 50;
-}
-
-.dialog {
-  width: 680px;
-  max-width: 94vw;
-  background: var(--panel);
-  border: 1px solid var(--line);
-  border-radius: 18px;
-  padding: 22px;
-  box-shadow: 0 30px 80px -20px #000;
-}
-
-.head {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 16px;
-}
-
-.title {
-  margin: 0;
-  font-size: 19px;
-  font-weight: 800;
-  letter-spacing: -0.01em;
+/* Dialog chrome (backdrop, panel, head, close) lives in the Modal atom; these
+ * vars set this dialog's exact width and padding. */
+.shell {
+  --modal-w: 680px;
+  --modal-max-w: 94vw;
+  --modal-pad: 22px;
 }
 
 .lead {
@@ -41,48 +13,12 @@
   line-height: 1.5;
 }
 
-.close {
-  --btn-square: 30px;
-  --btn-radius: 8px;
-}
-
 .bar {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
   margin-bottom: 12px;
-}
-
-.tabs {
-  display: flex;
-  gap: 3px;
-  padding: 3px;
-  border-radius: 10px;
-  background: var(--track);
-  border: 1px solid var(--line);
-}
-
-.tab {
-  height: 28px;
-  padding: 0 14px;
-  border-radius: 7px;
-  border: none;
-  background: none;
-  color: var(--dim);
-  font-family: inherit;
-  font-size: 12px;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.tab:hover {
-  color: var(--txt);
-}
-
-.active {
-  background: var(--elev);
-  color: var(--acc2);
 }
 
 .actions {

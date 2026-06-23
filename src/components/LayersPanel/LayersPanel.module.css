@@ -32,11 +32,8 @@
 }
 
 .title {
-  font-size: 11px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--dim);
-  font-weight: 700;
+  --eyebrow-fs: 11px;
+  --eyebrow-fg: var(--dim);
 }
 
 .count {

@@ -1,0 +1,27 @@
+/* MenuItem — the single source of the dropdown row (SVG-149). Defaults match the
+ * roomiest menu (TopBar); tighter menus override the --menuitem-* properties. */
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: var(--menuitem-gap, 11px);
+  width: 100%;
+  padding: var(--menuitem-py, 10px) var(--menuitem-px, 11px);
+  border-radius: var(--menuitem-radius, 9px);
+  border: none;
+  background: none;
+  color: var(--menuitem-fg, var(--txt));
+  font-family: inherit;
+  font-size: var(--menuitem-fs, 13px);
+  font-weight: var(--menuitem-fw, 600);
+  cursor: pointer;
+  text-align: left;
+}
+
+.item:hover {
+  background: var(--menuitem-hover-bg, var(--elev));
+}
+
+.danger:hover {
+  color: var(--danger);
+}

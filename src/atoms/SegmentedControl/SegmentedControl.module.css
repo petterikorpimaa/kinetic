@@ -1,0 +1,35 @@
+/* SegmentedControl — the single source of the tab/segment track (SVG-152).
+ * One segment is selected at a time; the active look is driven by
+ * [aria-selected="true"], not a class. Dimensions come from --seg-* so a call
+ * site can retune the track without restyling the active state. */
+
+.track {
+  display: flex;
+  gap: var(--seg-gap, 3px);
+  padding: var(--seg-pad, 3px);
+  border-radius: var(--seg-radius, 10px);
+  background: var(--track);
+  border: 1px solid var(--line);
+}
+
+.segment {
+  height: var(--seg-h, 28px);
+  padding: 0 var(--seg-px, 14px);
+  border-radius: var(--seg-item-radius, 7px);
+  border: none;
+  background: none;
+  color: var(--dim);
+  font-family: inherit;
+  font-size: var(--seg-fs, 12px);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.segment:hover {
+  color: var(--txt);
+}
+
+.segment[aria-selected='true'] {
+  background: var(--elev);
+  color: var(--acc2);
+}

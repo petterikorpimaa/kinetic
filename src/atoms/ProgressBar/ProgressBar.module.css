@@ -1,0 +1,17 @@
+/* ProgressBar — the single source of the determinate progress bar (SVG-154).
+ * Track and fill colours and the height come from --progress-* properties. */
+
+.track {
+  width: 100%;
+  height: var(--progress-h, 6px);
+  border-radius: 999px;
+  background: var(--progress-track, var(--elev));
+  overflow: hidden;
+}
+
+.fill {
+  display: block;
+  height: 100%;
+  background: var(--progress-fill, var(--acc));
+  transition: width 0.15s ease;
+}

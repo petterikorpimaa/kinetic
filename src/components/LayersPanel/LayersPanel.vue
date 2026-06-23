@@ -16,6 +16,7 @@ import {
 } from '@lucide/vue';
 import { useDocumentStore } from '@/stores/document';
 import Button from '@/atoms/Button/Button.vue';
+import SectionLabel from '@/atoms/SectionLabel/SectionLabel.vue';
 import styles from './LayersPanel.module.css';
 
 // Layer list: select + per-element visibility toggle (M1, Epic 5).
@@ -55,7 +56,7 @@ function hasKeyframes(id: string): boolean {
     <div :class="styles.head">
       <div :class="styles.heading">
         <div :class="styles.titleRow">
-          <span :class="styles.title">Layers</span>
+          <SectionLabel :class="styles.title">Layers</SectionLabel>
           <span :class="styles.count">{{ layerCount }}</span>
         </div>
         <div :class="styles.file">

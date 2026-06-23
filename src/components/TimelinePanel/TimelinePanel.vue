@@ -8,6 +8,8 @@ import { timeToFraction } from '@/core/timeline';
 import TransportControls from '../TransportControls/TransportControls.vue';
 import TimelineRuler from '../TimelineRuler/TimelineRuler.vue';
 import TimelineTrack from '../TimelineTrack/TimelineTrack.vue';
+import SectionLabel from '@/atoms/SectionLabel/SectionLabel.vue';
+import EmptyState from '@/atoms/EmptyState/EmptyState.vue';
 import styles from './TimelinePanel.module.css';
 
 // Timeline (M3, Epic 7/9): transport, scrubbable ruler, and a lane per active
@@ -148,7 +150,7 @@ function startMarquee(event: PointerEvent): void {
 
     <div ref="tracksRef" :class="styles.tracks">
       <div :class="styles.head">
-        <div :class="styles.labelCol">Tracks</div>
+        <div :class="styles.labelCol"><SectionLabel>Tracks</SectionLabel></div>
         <TimelineRuler />
       </div>
 
@@ -156,7 +158,9 @@ function startMarquee(event: PointerEvent): void {
         <template v-if="hasTracks">
           <TimelineTrack v-for="track in tracks" :key="track.id" :track="track" />
         </template>
-        <div v-else :class="styles.empty" data-testid="timeline-empty">{{ emptyMessage }}</div>
+        <EmptyState v-else :class="styles.empty" data-testid="timeline-empty">{{
+          emptyMessage
+        }}</EmptyState>
       </div>
 
       <div

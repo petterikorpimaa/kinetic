@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { ref, computed, onBeforeUnmount } from 'vue';
-import { X, Check, Copy, Download } from '@lucide/vue';
+import { Check, Copy, Download } from '@lucide/vue';
 import { useDocumentStore } from '@/stores/document';
 import { exportCss } from '@/core/cssExport';
 import { exportGsap } from '@/core/gsapExport';
 import RasterExportPanel from '../RasterExportPanel/RasterExportPanel.vue';
 import Button from '@/atoms/Button/Button.vue';
+import Modal from '@/atoms/Modal/Modal.vue';
+import SegmentedControl from '@/atoms/SegmentedControl/SegmentedControl.vue';
 import styles from './ExportDialog.module.css';
 
 type CodeFormat = 'svg' | 'css' | 'gsap';
@@ -87,66 +89,56 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div :class="styles.overlay" data-testid="export-overlay" @click="emit('close')">
-    <div :class="styles.dialog" data-testid="export-dialog" @click.stop>
-      <div :class="styles.head">
-        <div>
-          <h2 :class="styles.title">Export animation</h2>
-          <p :class="styles.lead">
-            Clean, pasteable code — sampled from the same engine as the editor.
-          </p>
-        </div>
-        <Button variant="icon" :class="styles.close" title="Close" @click="emit('close')">
-          <X :size="15" :stroke-width="1.6" />
+  <Modal
+    :class="styles.shell"
+    title="Export animation"
+    dialog-testid="export-dialog"
+    data-testid="export-overlay"
+    @close="emit('close')"
+  >
+    <template #subtitle>
+      <p :class="styles.lead">
+        Clean, pasteable code — sampled from the same engine as the editor.
+      </p>
+    </template>
+
+    <div :class="styles.bar">
+      <SegmentedControl
+        :model-value="format"
+        :items="TABS"
+        testid-prefix="export-tab-"
+        @update:model-value="setFormat"
+      />
+
+      <div v-if="isCodeFormat(format)" :class="styles.actions">
+        <Button
+          variant="ghost"
+          :class="styles.action"
+          title="Download"
+          data-testid="export-download"
+          @click="download"
+        >
+          <Download :size="14" :stroke-width="1.6" />
+          <span>{{ downloadName }}</span>
+        </Button>
+        <Button
+          variant="ghost"
+          accent
+          :class="styles.action"
+          data-testid="export-copy"
+          @click="copy"
+        >
+          <component :is="copied ? Check : Copy" :size="14" :stroke-width="1.7" />
+          <span>{{ copied ? 'Copied' : `Copy ${format.toUpperCase()}` }}</span>
         </Button>
       </div>
-
-      <div :class="styles.bar">
-        <div :class="styles.tabs" role="tablist">
-          <button
-            v-for="tab in TABS"
-            :key="tab.id"
-            type="button"
-            role="tab"
-            :class="[styles.tab, format === tab.id ? styles.active : '']"
-            :data-testid="`export-tab-${tab.id}`"
-            :aria-selected="format === tab.id"
-            @click="setFormat(tab.id)"
-          >
-            {{ tab.label }}
-          </button>
-        </div>
-
-        <div v-if="isCodeFormat(format)" :class="styles.actions">
-          <Button
-            variant="ghost"
-            :class="styles.action"
-            title="Download"
-            data-testid="export-download"
-            @click="download"
-          >
-            <Download :size="14" :stroke-width="1.6" />
-            <span>{{ downloadName }}</span>
-          </Button>
-          <Button
-            variant="ghost"
-            accent
-            :class="styles.action"
-            data-testid="export-copy"
-            @click="copy"
-          >
-            <component :is="copied ? Check : Copy" :size="14" :stroke-width="1.7" />
-            <span>{{ copied ? 'Copied' : `Copy ${format.toUpperCase()}` }}</span>
-          </Button>
-        </div>
-      </div>
-
-      <pre
-        v-if="isCodeFormat(format)"
-        :class="styles.code"
-        data-testid="export-code"
-      ><code>{{ code }}</code></pre>
-      <RasterExportPanel v-else :format="rasterFormat" />
     </div>
-  </div>
+
+    <pre
+      v-if="isCodeFormat(format)"
+      :class="styles.code"
+      data-testid="export-code"
+    ><code>{{ code }}</code></pre>
+    <RasterExportPanel v-else :format="rasterFormat" />
+  </Modal>
 </template>

@@ -1,41 +1,10 @@
-.overlay {
-  position: fixed;
-  inset: 0;
-  background: #08080cdd;
-  backdrop-filter: blur(4px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 50;
-}
-
-.dialog {
-  width: 520px;
-  max-width: 92vw;
-  background: var(--panel);
-  border: 1px solid var(--line);
-  border-radius: 18px;
-  padding: 26px;
-  box-shadow: 0 30px 80px -20px #000;
-}
-
-.head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 6px;
-}
-
-.title {
-  margin: 0;
-  font-size: 19px;
-  font-weight: 800;
-  letter-spacing: -0.01em;
-}
-
-.close {
-  --btn-square: 30px;
-  --btn-radius: 8px;
+/* Dialog chrome (backdrop, panel, head, close) lives in the Modal atom; these
+ * vars set this dialog's exact width/padding and a centred, tight head. */
+.shell {
+  --modal-pad: 26px;
+  --modal-head-align: center;
+  --modal-head-mb: 6px;
+  --modal-head-gap: 0;
 }
 
 .lead {

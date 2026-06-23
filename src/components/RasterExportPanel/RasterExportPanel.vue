@@ -1,10 +1,14 @@
 <script setup lang="ts">
 import { ref, computed, watch, onBeforeUnmount } from 'vue';
-import { Download, Loader, Film, Square } from '@lucide/vue';
+import { Download, Film, Square } from '@lucide/vue';
 import { useDocumentStore } from '@/stores/document';
 import { exportRaster, type RasterFormat } from '@/render/rasterExport';
 import { isWebmSupported } from '@/render/encodeWebm';
 import Button from '@/atoms/Button/Button.vue';
+import Field from '@/atoms/Field/Field.vue';
+import ColorField from '@/atoms/ColorField/ColorField.vue';
+import Spinner from '@/atoms/Spinner/Spinner.vue';
+import ProgressBar from '@/atoms/ProgressBar/ProgressBar.vue';
 import styles from './RasterExportPanel.module.css';
 
 // Render-and-download panel for the raster export formats (GIF, WebM video).
@@ -119,6 +123,15 @@ function formatSize(bytes: number): string {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
+function onScale(event: Event): void {
+  scale.value = Number((event.target as HTMLSelectElement).value);
+}
+
+function onFps(event: Event): void {
+  const value = Number.parseInt((event.target as HTMLInputElement).value, 10);
+  if (!Number.isNaN(value)) fps.value = value;
+}
+
 // Switching format or changing any option invalidates a rendered result.
 watch([() => props.format, scale, fps, background, transparent, loop], reset);
 
@@ -133,32 +146,44 @@ onBeforeUnmount(revokeResult);
       <div :class="styles.options">
         <label :class="styles.opt">
           <span :class="styles.optLabel">Size</span>
-          <select v-model.number="scale" :class="styles.optField" data-testid="raster-scale">
-            <option v-for="value in SCALE_OPTIONS" :key="value" :value="value">{{ value }}×</option>
-          </select>
+          <Field
+            type="select"
+            :class="styles.optField"
+            data-testid="raster-scale"
+            @change="onScale"
+          >
+            <option
+              v-for="value in SCALE_OPTIONS"
+              :key="value"
+              :value="value"
+              :selected="value === scale"
+            >
+              {{ value }}×
+            </option>
+          </Field>
         </label>
 
         <label :class="styles.opt">
           <span :class="styles.optLabel">FPS</span>
-          <input
-            v-model.number="fps"
+          <Field
             type="number"
             min="1"
             max="60"
+            :value="fps"
             :class="styles.optField"
             data-testid="raster-fps"
+            @input="onFps"
           />
         </label>
 
         <label :class="styles.opt">
           <span :class="styles.optLabel">Background</span>
           <span :class="styles.optBg">
-            <input
-              type="color"
-              :value="background"
-              :disabled="transparent"
+            <ColorField
               :class="styles.optColor"
-              @input="background = ($event.target as HTMLInputElement).value"
+              :model-value="background"
+              :disabled="transparent"
+              @update:model-value="background = $event"
             />
             <label :class="styles.optCheck">
               <input v-model="transparent" type="checkbox" />
@@ -200,8 +225,8 @@ onBeforeUnmount(revokeResult);
         </template>
         <p v-else-if="phase === 'error'" :class="styles.error">{{ errorMessage }}</p>
         <div v-else-if="phase === 'rendering'" :class="styles.progress">
-          <Loader :size="22" :stroke-width="1.6" :class="styles.spin" />
-          <div :class="styles.bar"><span :style="{ width: `${progressPct}%` }" /></div>
+          <Spinner :size="22" label="Rendering frames" />
+          <ProgressBar :value="progressPct" />
           <span :class="styles.count">{{ done }} / {{ total }} frames</span>
         </div>
         <div v-else :class="styles.placeholder">

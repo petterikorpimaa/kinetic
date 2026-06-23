@@ -1,0 +1,25 @@
+/* Chip — the single source of the pill toggle (SVG-152). The pressed state is
+ * styled off [aria-pressed="true"], not a class. Padding, radius, size come
+ * from --chip-* custom properties. */
+
+.chip {
+  padding: var(--chip-py, 5px) var(--chip-px, 10px);
+  border-radius: var(--chip-radius, 7px);
+  border: 1px solid var(--line);
+  background: var(--elev);
+  color: var(--dim);
+  font-family: inherit;
+  font-size: var(--chip-fs, 11.5px);
+  font-weight: var(--chip-fw, 600);
+  cursor: pointer;
+}
+
+.chip:hover {
+  color: var(--txt);
+}
+
+.chip[aria-pressed='true'] {
+  color: var(--acc2);
+  border-color: var(--acc);
+  background: #14b8a61f;
+}

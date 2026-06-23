@@ -1,0 +1,50 @@
+/* Modal — the shared dialog chrome (SVG-148): backdrop, centred panel, and the
+ * head with title + close. Size and head spacing come from --modal-* custom
+ * properties so each dialog keeps its exact dimensions; everything else (the
+ * surface, the close button, backdrop/Esc dismissal, focus trap) is identical. */
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: #08080cdd;
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+}
+
+.dialog {
+  width: var(--modal-w, 520px);
+  max-width: var(--modal-max-w, 92vw);
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: var(--modal-pad, 24px);
+  box-shadow: 0 30px 80px -20px #000;
+  outline: none;
+}
+
+.head {
+  display: flex;
+  align-items: var(--modal-head-align, flex-start);
+  justify-content: space-between;
+  gap: var(--modal-head-gap, 12px);
+  margin-bottom: var(--modal-head-mb, 16px);
+}
+
+.titleArea {
+  min-width: 0;
+}
+
+.title {
+  margin: 0;
+  font-size: 19px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.close {
+  --btn-square: 30px;
+  --btn-radius: 8px;
+}

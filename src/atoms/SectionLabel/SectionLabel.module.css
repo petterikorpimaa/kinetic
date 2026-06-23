@@ -1,0 +1,12 @@
+/* SectionLabel — the single source of the eyebrow type treatment (SVG-150).
+ * Defaults are the common 10px / 0.1em / 700 / dim2; call sites override size,
+ * spacing, weight or colour through --eyebrow-* and keep their own layout
+ * (display, margins, padding) on the same element. */
+
+.eyebrow {
+  font-size: var(--eyebrow-fs, 10px);
+  font-weight: var(--eyebrow-fw, 700);
+  letter-spacing: var(--eyebrow-ls, 0.1em);
+  text-transform: uppercase;
+  color: var(--eyebrow-fg, var(--dim2));
+}

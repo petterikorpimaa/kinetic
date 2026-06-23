@@ -1,0 +1,27 @@
+/* Field — the single source of text / number / select input appearance (SVG-146).
+ * Height, border, background, font, focus ring and disabled dimming live here;
+ * a call site sets its exact context through the --field-* custom properties.
+ * Layout (width / flex) and one-off treatments (text-transform) stay on the
+ * call site's own class, which falls through onto this element. */
+
+.field {
+  height: var(--field-h, 32px);
+  padding: 0 var(--field-px, 9px);
+  border: 1px solid var(--field-bd, var(--line));
+  border-radius: var(--field-radius, 8px);
+  background: var(--field-bg, var(--track));
+  color: var(--field-fg, var(--txt));
+  font-family: var(--field-font, inherit);
+  font-size: var(--field-fs, 12px);
+  text-align: var(--field-align, left);
+  outline: none;
+}
+
+.field:focus {
+  border-color: var(--field-bd-focus, var(--acc));
+}
+
+.field:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

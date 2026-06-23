@@ -8,6 +8,8 @@ import PropertyRow from '../PropertyRow/PropertyRow.vue';
 import AddPropertyMenu from '../AddPropertyMenu/AddPropertyMenu.vue';
 import EasingEditor from '../EasingEditor/EasingEditor.vue';
 import Button from '@/atoms/Button/Button.vue';
+import SectionLabel from '@/atoms/SectionLabel/SectionLabel.vue';
+import EmptyState from '@/atoms/EmptyState/EmptyState.vue';
 import styles from './InspectorPanel.module.css';
 
 // Inspector (M2, Epic 6): active property rows for the selected element, value
@@ -61,7 +63,7 @@ watch(selectedId, () => {
   <aside :class="styles.inspector" data-testid="inspector-panel">
     <div :class="styles.head">
       <div :class="styles.heading">
-        <div :class="styles.eyebrow">Inspector</div>
+        <SectionLabel :class="styles.eyebrow">Inspector</SectionLabel>
         <div :class="styles.name" :title="selName">{{ selName }}</div>
         <div :class="styles.meta">
           Values at playhead ·
@@ -79,7 +81,7 @@ watch(selectedId, () => {
     <template v-if="selected">
       <div :class="styles.props">
         <div :class="styles.section">
-          <span :class="styles.sectionTitle">Properties</span>
+          <SectionLabel>Properties</SectionLabel>
           <span :class="styles.count" data-testid="inspector-count">{{ activeCount }}</span>
         </div>
 
@@ -125,9 +127,9 @@ watch(selectedId, () => {
           />
         </div>
 
-        <p v-if="activeCount === 0" :class="styles.note">
+        <EmptyState v-if="activeCount === 0" bordered :class="styles.note">
           No animated properties yet — add one to start keyframing.
-        </p>
+        </EmptyState>
 
         <div :class="styles.addWrap">
           <Button
@@ -152,14 +154,16 @@ watch(selectedId, () => {
       <EasingEditor />
     </template>
 
-    <div v-else :class="styles.empty">
-      <div :class="styles.emptyIcon">
-        <MousePointer2 :size="22" :stroke-width="1.6" />
-      </div>
+    <EmptyState v-else :class="styles.empty">
+      <template #icon>
+        <div :class="styles.emptyIcon">
+          <MousePointer2 :size="22" :stroke-width="1.6" />
+        </div>
+      </template>
       <div :class="styles.emptyTitle">No shape selected</div>
       <div :class="styles.emptyHint">
         Click a shape on the canvas, or pick a layer, to edit and animate its properties.
       </div>
-    </div>
+    </EmptyState>
   </aside>
 </template>

@@ -9,6 +9,10 @@ import {
 } from '@/core/properties';
 import type { AnimatableProperty } from '@/types/track';
 import { useDocumentStore } from '@/stores/document';
+import Popover from '@/atoms/Popover/Popover.vue';
+import MenuItem from '@/atoms/MenuItem/MenuItem.vue';
+import SectionLabel from '@/atoms/SectionLabel/SectionLabel.vue';
+import EmptyState from '@/atoms/EmptyState/EmptyState.vue';
 import styles from './AddPropertyMenu.module.css';
 
 // Grouped add-property menu (M2, Epic 6): Transform / Appearance / Filters,
@@ -57,21 +61,20 @@ function add(entry: MenuEntry): void {
 </script>
 
 <template>
-  <div :class="styles.backdrop" @click="emit('close')" />
-  <div :class="styles.menu" data-testid="add-property-menu">
-    <p v-if="allAdded" :class="styles.empty">All properties added.</p>
-    <div v-for="entry in groups" v-else :key="entry.group" :class="styles.group">
-      <div :class="styles.title">{{ entry.group }}</div>
-      <button
-        v-for="item in entry.items"
-        :key="item.key"
-        type="button"
-        :class="styles.item"
-        :data-testid="`add-prop-${item.key}`"
-        @click="add(item)"
-      >
-        {{ item.label }}
-      </button>
+  <Popover :open="true" :backdrop-z="20" @update:open="emit('close')">
+    <div :class="styles.menu" data-testid="add-property-menu">
+      <EmptyState v-if="allAdded" :class="styles.empty">All properties added.</EmptyState>
+      <div v-for="entry in groups" v-else :key="entry.group" :class="styles.group">
+        <SectionLabel :class="styles.title">{{ entry.group }}</SectionLabel>
+        <MenuItem
+          v-for="item in entry.items"
+          :key="item.key"
+          :data-testid="`add-prop-${item.key}`"
+          @click="add(item)"
+        >
+          {{ item.label }}
+        </MenuItem>
+      </div>
     </div>
-  </div>
+  </Popover>
 </template>

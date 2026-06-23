@@ -7,6 +7,8 @@ import { sampleNumber, sampleColor, hasKeyframeAt } from '@/core/animation';
 import { normalizeHex } from '@/core/color';
 import { useDocumentStore } from '@/stores/document';
 import Button from '@/atoms/Button/Button.vue';
+import Field from '@/atoms/Field/Field.vue';
+import ColorField from '@/atoms/ColorField/ColorField.vue';
 import styles from './PropertyRow.module.css';
 
 // One Inspector property row (M2, Epic 6): value control, add-keyframe diamond,
@@ -83,34 +85,25 @@ function selectAll(event: FocusEvent): void {
 
     <div :class="styles.control">
       <template v-if="def.kind === 'color'">
-        <label
-          :class="[styles.swatch, locked ? styles.locked : '']"
-          :style="{ background: colorValue }"
-          title="Pick colour"
-        >
-          <input
-            type="color"
-            :value="colorValue"
-            :class="styles.colorInput"
-            :disabled="locked"
-            @input="onHexInput"
-          />
-        </label>
-        <input
-          type="text"
-          :class="[styles.input, styles.hex, locked ? styles.locked : '']"
-          :value="colorValue"
+        <ColorField
+          :model-value="colorValue"
           :disabled="locked"
+          title="Pick colour"
+          @update:model-value="commitColor"
+        />
+        <Field
+          :class="[styles.input, styles.hex]"
+          :locked="locked"
+          :value="colorValue"
           @change="onHexInput"
           @focus="selectAll"
         />
       </template>
       <template v-else>
-        <input
-          type="text"
-          :class="[styles.input, locked ? styles.locked : '']"
+        <Field
+          :class="styles.input"
+          :locked="locked"
           :value="numericText"
-          :disabled="locked"
           @change="commitNumber"
           @focus="selectAll"
         />

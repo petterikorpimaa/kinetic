@@ -5,6 +5,9 @@ import { useDocumentStore } from '@/stores/document';
 import { usePersistenceStore } from '@/stores/persistence';
 import { createEmptyDocument } from '@/types';
 import Button from '@/atoms/Button/Button.vue';
+import Popover from '@/atoms/Popover/Popover.vue';
+import MenuItem from '@/atoms/MenuItem/MenuItem.vue';
+import SectionLabel from '@/atoms/SectionLabel/SectionLabel.vue';
 import styles from './TopBar.module.css';
 
 const emit = defineEmits<{ import: []; export: [] }>();
@@ -46,7 +49,7 @@ function clearSaved(): void {
       <div :class="styles.logo"><span :class="styles.diamond" /></div>
       <div :class="styles.text">
         <span :class="styles.name">Kinetic</span>
-        <span :class="styles.sub">SVG Motion Studio</span>
+        <SectionLabel :class="styles.sub">SVG Motion Studio</SectionLabel>
       </div>
     </div>
 
@@ -97,31 +100,20 @@ function clearSaved(): void {
         <Menu :size="15" :stroke-width="1.5" />
         <span>Menu</span>
       </Button>
-      <template v-if="menuOpen">
-        <div :class="styles.backdrop" @click="menuOpen = false" />
+      <Popover :open="menuOpen" @update:open="menuOpen = $event">
         <div :class="styles.dropdown">
-          <button
-            type="button"
-            :class="styles.item"
-            data-testid="menu-import"
-            @click="choose('import')"
-          >
+          <MenuItem data-testid="menu-import" @click="choose('import')">
             <Upload :size="15" :stroke-width="1.5" />
             Import SVG
-          </button>
-          <button
-            type="button"
-            :class="styles.item"
-            data-testid="menu-export"
-            @click="choose('export')"
-          >
+          </MenuItem>
+          <MenuItem data-testid="menu-export" @click="choose('export')">
             <Code2 :size="15" :stroke-width="1.5" />
             Export animation
-          </button>
+          </MenuItem>
 
           <div :class="styles.sep" />
 
-          <button type="button" :class="styles.item" data-testid="menu-storage" @click="toggleMode">
+          <MenuItem data-testid="menu-storage" @click="toggleMode">
             <HardDrive :size="15" :stroke-width="1.5" />
             <span>Autosave: {{ persistence.mode === 'local' ? 'Local' : 'Session' }}</span>
             <Check
@@ -134,18 +126,13 @@ function clearSaved(): void {
             <span v-else :class="[styles.hint, styles.hintText]" data-testid="menu-storage-session"
               >tab only</span
             >
-          </button>
-          <button
-            type="button"
-            :class="[styles.item, styles.danger]"
-            data-testid="menu-clear"
-            @click="clearSaved"
-          >
+          </MenuItem>
+          <MenuItem danger data-testid="menu-clear" @click="clearSaved">
             <Trash2 :size="15" :stroke-width="1.5" />
             Clear saved work
-          </button>
+          </MenuItem>
         </div>
-      </template>
+      </Popover>
     </div>
   </header>
 </template>

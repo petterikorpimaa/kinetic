@@ -19,6 +19,9 @@ import {
   type ElementVisual,
 } from '@/core/elementVisual';
 import Button from '@/atoms/Button/Button.vue';
+import ColorField from '@/atoms/ColorField/ColorField.vue';
+import Popover from '@/atoms/Popover/Popover.vue';
+import MenuItem from '@/atoms/MenuItem/MenuItem.vue';
 import styles from './CanvasStage.module.css';
 
 // Renders the inlined SVG: click-to-select, wheel zoom + drag pan (M1, Epic 4),
@@ -271,32 +274,28 @@ function setPattern(pattern: BgPattern): void {
             :class="[styles.chev, bgMenuOpen ? styles.open : '']"
           />
         </Button>
-        <template v-if="bgMenuOpen">
-          <div :class="styles.backdrop" @click="bgMenuOpen = false" />
+        <Popover :open="bgMenuOpen" :backdrop-z="7" @update:open="bgMenuOpen = $event">
           <div :class="styles.menu">
-            <button type="button" :class="styles.item" @click="setPattern('Grid')">
+            <MenuItem @click="setPattern('Grid')">
               <Grid3x3 :size="15" :stroke-width="1.2" />Grid
-            </button>
-            <button type="button" :class="styles.item" @click="setPattern('Dots')">
+            </MenuItem>
+            <MenuItem @click="setPattern('Dots')">
               <Grip :size="15" :stroke-width="1.2" />Dots
-            </button>
-            <button type="button" :class="styles.item" @click="setPattern('Plain')">
+            </MenuItem>
+            <MenuItem @click="setPattern('Plain')">
               <Square :size="15" :stroke-width="1.3" />Plain
-            </button>
+            </MenuItem>
           </div>
-        </template>
+        </Popover>
       </div>
 
-      <label :class="[styles.ctrl, styles.color]" title="Background color">
-        <span :class="styles.swatch" :style="{ background: bgColor }" />
-        <span :class="styles.hex">{{ bgColor }}</span>
-        <input
-          type="color"
-          :value="bgColor"
-          :class="styles.colorInput"
-          @input="bgColor = ($event.target as HTMLInputElement).value"
-        />
-      </label>
+      <ColorField
+        :class="[styles.ctrl, styles.color]"
+        show-hex
+        :model-value="bgColor"
+        title="Background color"
+        @update:model-value="bgColor = $event"
+      />
 
       <Button
         variant="icon"

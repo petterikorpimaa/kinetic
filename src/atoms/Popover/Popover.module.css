@@ -1,0 +1,8 @@
+/* Popover backdrop (SVG-149) — the full-screen click-away layer beneath a menu
+ * panel. The z-index is set per call site so it sits just under that menu's
+ * panel; the panel itself stays in the consumer's stylesheet. */
+
+.backdrop {
+  position: fixed;
+  inset: 0;
+}
