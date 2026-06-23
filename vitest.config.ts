@@ -2,9 +2,15 @@ import { fileURLToPath } from 'node:url';
 import { mergeConfig, defineConfig, configDefaults } from 'vitest/config';
 import viteConfig from './vite.config';
 
+// vite.config exports a function (base is command-conditional for GitHub Pages),
+// so resolve it to a plain config for merging. The command/mode don't matter for
+// tests; we only need the shared `@` alias.
+const resolvedViteConfig =
+  typeof viteConfig === 'function' ? viteConfig({ command: 'serve', mode: 'test' }) : viteConfig;
+
 // Unit/component tests. E2E lives in ./e2e and is run by Playwright, not Vitest.
 export default mergeConfig(
-  viteConfig,
+  resolvedViteConfig,
   defineConfig({
     test: {
       environment: 'jsdom',
