@@ -1,0 +1,58 @@
+.editor {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.middle {
+  flex: 1;
+  display: flex;
+  min-height: 0;
+}
+
+.rail {
+  width: var(--rail-width);
+  flex: none;
+  background: var(--panel);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 0;
+  cursor: pointer;
+  border: none;
+}
+
+.left {
+  border-right: 1px solid var(--line);
+}
+
+.right {
+  border-left: 1px solid var(--line);
+}
+
+.box {
+  width: 26px;
+  height: 26px;
+  border-radius: 7px;
+  border: 1px solid var(--line);
+  background: var(--elev);
+  color: var(--dim);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.label {
+  writing-mode: vertical-rl;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--dim);
+  font-weight: 700;
+}
+
+.rail:hover .box {
+  color: var(--txt);
+}

@@ -67,7 +67,7 @@ describe('TimelinePanel', () => {
     expect(store.selectedKeyframeIds.size).toBe(1);
 
     // A press on the lane that never moves clears the selection on pointer-up.
-    await wrapper.find('.track__lane').trigger('pointerdown');
+    await wrapper.find('[data-lane]').trigger('pointerdown');
     window.dispatchEvent(new Event('pointerup'));
     expect(store.selectedKeyframeIds.size).toBe(0);
   });

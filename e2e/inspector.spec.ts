@@ -17,7 +17,7 @@ test('add a property, edit its value, and see it applied on the canvas', async (
   await input.fill('40');
   await input.blur();
 
-  await expect(page.getByTestId('prop-key-x')).toHaveClass(/prop__key--active/);
+  await expect(page.getByTestId('prop-key-x')).toHaveAttribute('data-active', 'true');
   const plate = page.getByTestId('canvas-stage').locator('[data-anim-id="plate"]');
   await expect(plate).toHaveAttribute('transform', /translate\(40 /);
 });
@@ -57,7 +57,7 @@ test('a colour property accepts a hex value', async ({ page }) => {
   await hex.fill('#ff0000');
   await hex.blur();
 
-  await expect(page.getByTestId('prop-key-fill')).toHaveClass(/prop__key--active/);
+  await expect(page.getByTestId('prop-key-fill')).toHaveAttribute('data-active', 'true');
   const plate = page.getByTestId('canvas-stage').locator('[data-anim-id="plate"]');
   await expect(plate).toHaveAttribute('fill', '#ff0000');
 });

@@ -47,8 +47,8 @@ function setup() {
 describe('TimelineTrack', () => {
   it('renders the property label, count, and a diamond per keyframe', () => {
     const { wrapper } = setup();
-    expect(wrapper.find('.track__name').text()).toBe('Position X');
-    expect(wrapper.find('.track__count').text()).toBe('2');
+    expect(wrapper.find('[data-testid="track-name"]').text()).toBe('Position X');
+    expect(wrapper.find('[data-testid="track-count"]').text()).toBe('2');
     expect(wrapper.findAll('[data-testid="keyframe"]')).toHaveLength(2);
   });
 
@@ -57,7 +57,7 @@ describe('TimelineTrack', () => {
     await wrapper.findAll('[data-testid="keyframe"]')[0]!.trigger('pointerdown');
 
     expect(store.isKeyframeSelected(track.keyframes[0]!.id)).toBe(true);
-    expect(wrapper.find('.kf--selected').exists()).toBe(true);
+    expect(wrapper.find('[data-selected="true"]').exists()).toBe(true);
   });
 
   it('adds a keyframe at the playhead from the lane button', async () => {

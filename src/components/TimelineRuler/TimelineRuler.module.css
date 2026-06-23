@@ -1,0 +1,24 @@
+.ruler {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  background: var(--panel);
+  cursor: pointer;
+}
+
+.tick {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: #ffffff0f;
+}
+
+.label {
+  position: absolute;
+  top: 6px;
+  left: 4px;
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  color: var(--dim2);
+}

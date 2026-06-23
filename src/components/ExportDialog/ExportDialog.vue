@@ -4,25 +4,26 @@ import { X, Check, Copy, Download } from '@lucide/vue';
 import { useDocumentStore } from '@/stores/document';
 import { exportCss } from '@/core/cssExport';
 import { exportGsap } from '@/core/gsapExport';
-import RasterExportPanel from './RasterExportPanel.vue';
+import RasterExportPanel from '../RasterExportPanel/RasterExportPanel.vue';
+import styles from './ExportDialog.module.css';
 
-type CodeFormat = 'css' | 'gsap' | 'svg';
+type CodeFormat = 'svg' | 'css' | 'gsap';
 type Format = CodeFormat | 'gif' | 'video';
 
 const emit = defineEmits<{ close: [] }>();
 const store = useDocumentStore();
 
 const TABS: readonly { id: Format; label: string }[] = [
+  { id: 'svg', label: 'SVG' },
   { id: 'css', label: 'CSS' },
   { id: 'gsap', label: 'GSAP' },
-  { id: 'svg', label: 'SVG' },
   { id: 'gif', label: 'GIF' },
   { id: 'video', label: 'Video' },
 ];
 const CODE_META: Record<CodeFormat, { ext: string; mime: string }> = {
+  svg: { ext: 'svg', mime: 'image/svg+xml' },
   css: { ext: 'css', mime: 'text/css' },
   gsap: { ext: 'js', mime: 'text/javascript' },
-  svg: { ext: 'svg', mime: 'image/svg+xml' },
 };
 
 function isCodeFormat(value: Format): value is CodeFormat {
@@ -85,29 +86,28 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="overlay" @click="emit('close')">
-    <div class="dialog" data-testid="export-dialog" @click.stop>
-      <div class="dialog__head">
+  <div :class="styles.overlay" data-testid="export-overlay" @click="emit('close')">
+    <div :class="styles.dialog" data-testid="export-dialog" @click.stop>
+      <div :class="styles.head">
         <div>
-          <h2 class="dialog__title">Export animation</h2>
-          <p class="dialog__lead">
+          <h2 :class="styles.title">Export animation</h2>
+          <p :class="styles.lead">
             Clean, pasteable code — sampled from the same engine as the editor.
           </p>
         </div>
-        <button type="button" class="dialog__close" title="Close" @click="emit('close')">
+        <button type="button" :class="styles.close" title="Close" @click="emit('close')">
           <X :size="15" :stroke-width="1.6" />
         </button>
       </div>
 
-      <div class="bar">
-        <div class="tabs" role="tablist">
+      <div :class="styles.bar">
+        <div :class="styles.tabs" role="tablist">
           <button
             v-for="tab in TABS"
             :key="tab.id"
             type="button"
             role="tab"
-            class="tab"
-            :class="{ 'tab--active': format === tab.id }"
+            :class="[styles.tab, format === tab.id ? styles.active : '']"
             :data-testid="`export-tab-${tab.id}`"
             :aria-selected="format === tab.id"
             @click="setFormat(tab.id)"
@@ -116,10 +116,10 @@ onBeforeUnmount(() => {
           </button>
         </div>
 
-        <div v-if="isCodeFormat(format)" class="actions">
+        <div v-if="isCodeFormat(format)" :class="styles.actions">
           <button
             type="button"
-            class="action"
+            :class="styles.action"
             title="Download"
             data-testid="export-download"
             @click="download"
@@ -129,8 +129,7 @@ onBeforeUnmount(() => {
           </button>
           <button
             type="button"
-            class="action action--primary"
-            :class="{ 'action--done': copied }"
+            :class="[styles.action, styles.primary, copied ? styles.done : '']"
             data-testid="export-copy"
             @click="copy"
           >
@@ -142,175 +141,10 @@ onBeforeUnmount(() => {
 
       <pre
         v-if="isCodeFormat(format)"
-        class="code"
+        :class="styles.code"
         data-testid="export-code"
       ><code>{{ code }}</code></pre>
       <RasterExportPanel v-else :format="rasterFormat" />
     </div>
   </div>
 </template>
-
-<style scoped>
-.overlay {
-  position: fixed;
-  inset: 0;
-  background: #08080cdd;
-  backdrop-filter: blur(4px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 50;
-}
-
-.dialog {
-  width: 680px;
-  max-width: 94vw;
-  background: var(--panel);
-  border: 1px solid var(--line);
-  border-radius: 18px;
-  padding: 22px;
-  box-shadow: 0 30px 80px -20px #000;
-}
-
-.dialog__head {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 16px;
-}
-
-.dialog__title {
-  margin: 0;
-  font-size: 19px;
-  font-weight: 800;
-  letter-spacing: -0.01em;
-}
-
-.dialog__lead {
-  margin: 5px 0 0;
-  color: var(--dim);
-  font-size: 12.5px;
-  line-height: 1.5;
-}
-
-.dialog__close {
-  width: 30px;
-  height: 30px;
-  flex: none;
-  border-radius: 8px;
-  border: 1px solid var(--line);
-  background: var(--elev);
-  color: var(--dim);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.dialog__close:hover {
-  color: var(--txt);
-}
-
-.bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 12px;
-}
-
-.tabs {
-  display: flex;
-  gap: 3px;
-  padding: 3px;
-  border-radius: 10px;
-  background: var(--track);
-  border: 1px solid var(--line);
-}
-
-.tab {
-  height: 28px;
-  padding: 0 14px;
-  border-radius: 7px;
-  border: none;
-  background: none;
-  color: var(--dim);
-  font-family: inherit;
-  font-size: 12px;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.tab:hover {
-  color: var(--txt);
-}
-
-.tab--active {
-  background: var(--elev);
-  color: var(--acc2);
-}
-
-.actions {
-  display: flex;
-  gap: 8px;
-}
-
-.action {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  height: 34px;
-  padding: 0 12px;
-  border-radius: 9px;
-  border: 1px solid var(--line);
-  background: var(--elev);
-  color: var(--txt);
-  font-family: inherit;
-  font-size: 12px;
-  font-weight: 700;
-  cursor: pointer;
-  max-width: 220px;
-}
-
-.action span {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.action:hover {
-  border-color: var(--dim2);
-}
-
-.action--primary {
-  border-color: var(--acc);
-  color: var(--acc2);
-}
-
-.action--done {
-  color: var(--acc2);
-  border-color: var(--acc);
-}
-
-.code {
-  margin: 0;
-  height: 380px;
-  max-height: 56vh;
-  overflow: auto;
-  padding: 16px;
-  border-radius: 12px;
-  border: 1px solid var(--line);
-  background: var(--track);
-  color: var(--txt);
-  font-family: var(--font-mono);
-  font-size: 12px;
-  line-height: 1.6;
-  white-space: pre;
-  tab-size: 2;
-}
-
-.code code {
-  font-family: inherit;
-}
-</style>

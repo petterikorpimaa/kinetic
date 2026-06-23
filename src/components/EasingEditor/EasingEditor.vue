@@ -11,6 +11,7 @@ import {
   cubicBezierCss,
 } from '@/core/easingCurve';
 import type { CubicBezierEasing } from '@/types/easing';
+import styles from './EasingEditor.module.css';
 
 // Easing editor (M4, Epic 8): a collapsible Inspector section that edits the
 // outgoing-segment easing of the selected keyframe(s) (DEC-2). One keyframe →
@@ -122,22 +123,17 @@ function startHandleDrag(which: 1 | 2, event: PointerEvent): void {
 </script>
 
 <template>
-  <section class="easing" data-testid="easing-editor">
-    <button type="button" class="easing__head" @click="open = !open">
-      <span class="easing__title">Easing</span>
-      <span v-if="headerLabel" class="easing__badge" data-testid="easing-label">{{
+  <section :class="styles.easing" data-testid="easing-editor">
+    <button type="button" :class="styles.head" @click="open = !open">
+      <span :class="styles.title">Easing</span>
+      <span v-if="headerLabel" :class="styles.badge" data-testid="easing-label">{{
         headerLabel
       }}</span>
-      <ChevronDown
-        :size="13"
-        :stroke-width="1.6"
-        class="easing__chev"
-        :class="{ 'easing__chev--open': open }"
-      />
+      <ChevronDown :size="13" :stroke-width="1.6" :class="[styles.chev, open ? styles.open : '']" />
     </button>
 
-    <div v-if="open" class="easing__body">
-      <p v-if="count === 0" class="easing__empty" data-testid="easing-empty">
+    <div v-if="open" :class="styles.body">
+      <p v-if="count === 0" :class="styles.empty" data-testid="easing-empty">
         Select a keyframe on the timeline to edit its easing.
       </p>
 
@@ -145,36 +141,36 @@ function startHandleDrag(which: 1 | 2, event: PointerEvent): void {
         <svg
           v-if="count === 1"
           ref="svgRef"
-          class="easing__curve"
+          :class="styles.curve"
           :viewBox="`0 0 ${SIZE} ${SIZE}`"
           data-testid="easing-curve"
         >
-          <line class="easing__axis" :x1="origin.x" :y1="0" :x2="origin.x" :y2="SIZE" />
-          <line class="easing__axis" :x1="0" :y1="origin.y" :x2="SIZE" :y2="origin.y" />
+          <line :class="styles.axis" :x1="origin.x" :y1="0" :x2="origin.x" :y2="SIZE" />
+          <line :class="styles.axis" :x1="0" :y1="origin.y" :x2="SIZE" :y2="origin.y" />
           <line
-            class="easing__guide"
+            :class="styles.guide"
             :x1="origin.x"
             :y1="origin.y"
             :x2="endPoint.x"
             :y2="endPoint.y"
           />
           <line
-            class="easing__handle-line"
+            :class="styles.handleLine"
             :x1="origin.x"
             :y1="origin.y"
             :x2="handle1.x"
             :y2="handle1.y"
           />
           <line
-            class="easing__handle-line"
+            :class="styles.handleLine"
             :x1="endPoint.x"
             :y1="endPoint.y"
             :x2="handle2.x"
             :y2="handle2.y"
           />
-          <path class="easing__path" :d="path" />
+          <path :class="styles.path" :d="path" />
           <circle
-            class="easing__handle"
+            :class="styles.handle"
             :cx="handle1.x"
             :cy="handle1.y"
             :r="HANDLE_RADIUS"
@@ -182,7 +178,7 @@ function startHandleDrag(which: 1 | 2, event: PointerEvent): void {
             @pointerdown="startHandleDrag(1, $event)"
           />
           <circle
-            class="easing__handle"
+            :class="styles.handle"
             :cx="handle2.x"
             :cy="handle2.y"
             :r="HANDLE_RADIUS"
@@ -191,17 +187,16 @@ function startHandleDrag(which: 1 | 2, event: PointerEvent): void {
           />
         </svg>
 
-        <p v-else class="easing__multi" data-testid="easing-multi">
+        <p v-else :class="styles.multi" data-testid="easing-multi">
           {{ count }} keyframes selected — pick a preset to apply to all.
         </p>
 
-        <div class="easing__presets">
+        <div :class="styles.presets">
           <button
             v-for="preset in presets"
             :key="preset.name"
             type="button"
-            class="easing__preset"
-            :class="{ 'easing__preset--active': activePresetName === preset.name }"
+            :class="[styles.preset, activePresetName === preset.name ? styles.active : '']"
             :data-testid="`easing-preset-${preset.name}`"
             @click="applyPreset(preset.value)"
           >
@@ -209,151 +204,8 @@ function startHandleDrag(which: 1 | 2, event: PointerEvent): void {
           </button>
         </div>
 
-        <div class="easing__readout" data-testid="easing-readout">{{ cssText }}</div>
+        <div :class="styles.readout" data-testid="easing-readout">{{ cssText }}</div>
       </template>
     </div>
   </section>
 </template>
-
-<style scoped>
-.easing {
-  border-top: 1px solid var(--line);
-  padding: 12px 14px 16px;
-}
-
-.easing__head {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  width: 100%;
-  padding: 0;
-  border: none;
-  background: none;
-  color: var(--txt);
-  cursor: pointer;
-}
-
-.easing__title {
-  font-size: 10px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--dim2);
-  font-weight: 700;
-}
-
-.easing__badge {
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--acc2);
-  font-family: var(--font-mono);
-}
-
-.easing__chev {
-  margin-left: auto;
-  color: var(--dim2);
-  transition: transform 0.15s;
-}
-
-.easing__chev--open {
-  transform: rotate(180deg);
-}
-
-.easing__body {
-  margin-top: 12px;
-}
-
-.easing__empty,
-.easing__multi {
-  margin: 0 0 12px;
-  padding: 14px;
-  text-align: center;
-  border: 1px dashed var(--line);
-  border-radius: 11px;
-  color: var(--dim2);
-  font-size: 12px;
-  line-height: 1.5;
-}
-
-.easing__curve {
-  display: block;
-  width: 100%;
-  aspect-ratio: 1 / 1;
-  margin-bottom: 12px;
-  background: var(--track);
-  border: 1px solid var(--line);
-  border-radius: 11px;
-  overflow: visible;
-}
-
-.easing__axis {
-  stroke: var(--line);
-  stroke-width: 1;
-}
-
-.easing__guide {
-  stroke: var(--dim2);
-  stroke-width: 0.75;
-  stroke-dasharray: 3 3;
-  opacity: 0.55;
-}
-
-.easing__handle-line {
-  stroke: var(--dim2);
-  stroke-width: 0.5;
-}
-
-.easing__path {
-  fill: none;
-  stroke: var(--acc2);
-  stroke-width: 2;
-}
-
-.easing__handle {
-  fill: var(--acc);
-  stroke: #fff;
-  stroke-width: 1.5;
-  cursor: grab;
-  touch-action: none;
-}
-
-.easing__handle:active {
-  cursor: grabbing;
-}
-
-.easing__presets {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-bottom: 12px;
-}
-
-.easing__preset {
-  padding: 5px 10px;
-  border-radius: 7px;
-  border: 1px solid var(--line);
-  background: var(--elev);
-  color: var(--dim);
-  font-family: inherit;
-  font-size: 11.5px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.easing__preset:hover {
-  color: var(--txt);
-}
-
-.easing__preset--active {
-  color: var(--acc2);
-  border-color: var(--acc);
-  background: #14b8a61f;
-}
-
-.easing__readout {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  color: var(--dim);
-  text-align: center;
-  word-break: break-all;
-}
-</style>

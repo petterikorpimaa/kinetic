@@ -7,6 +7,7 @@ import { getPropertyDef } from '@/core/properties';
 import { sampleNumber, sampleColor } from '@/core/animation';
 import { timeToFraction } from '@/core/timeline';
 import type { AnyTrack, NumericTrack, ColorTrack } from '@/types/track';
+import styles from './TimelineTrack.module.css';
 
 // One lane per active property (M3, Epic 7): label + count + add-keyframe,
 // keyframe diamonds positioned by time, click-to-select (additive with a
@@ -83,13 +84,13 @@ function onKeyframeDown(event: PointerEvent, keyframe: { id: string }): void {
 </script>
 
 <template>
-  <div class="track" data-testid="timeline-track">
-    <div class="track__label-col">
-      <span class="track__name" :title="label">{{ label }}</span>
-      <span class="track__count">{{ count }}</span>
+  <div :class="styles.track" data-testid="timeline-track">
+    <div :class="styles.labelCol">
+      <span :class="styles.name" data-testid="track-name" :title="label">{{ label }}</span>
+      <span :class="styles.count" data-testid="track-count">{{ count }}</span>
       <button
         type="button"
-        class="track__add"
+        :class="styles.add"
         title="Add keyframe at playhead"
         data-testid="lane-add-keyframe"
         @click="addKeyframeAtPlayhead"
@@ -97,108 +98,18 @@ function onKeyframeDown(event: PointerEvent, keyframe: { id: string }): void {
         <Plus :size="13" :stroke-width="1.8" />
       </button>
     </div>
-    <div ref="laneRef" class="track__lane" :class="{ 'track__lane--dragging': dragging }">
+    <div ref="laneRef" data-lane :class="[styles.lane, dragging ? styles.dragging : '']">
       <button
         v-for="keyframe in track.keyframes"
         :key="keyframe.id"
         type="button"
-        class="kf"
-        :class="{ 'kf--selected': store.isKeyframeSelected(keyframe.id) }"
+        :class="[styles.kf, store.isKeyframeSelected(keyframe.id) ? styles.selected : '']"
         :style="{ left: `${leftPercent(keyframe)}%` }"
         data-testid="keyframe"
         :data-keyframe-id="keyframe.id"
+        :data-selected="store.isKeyframeSelected(keyframe.id)"
         @pointerdown="onKeyframeDown($event, keyframe)"
       />
     </div>
   </div>
 </template>
-
-<style scoped>
-.track {
-  height: var(--lane-height);
-  flex: none;
-  display: flex;
-  border-bottom: 1px solid var(--line);
-}
-
-.track__label-col {
-  width: var(--lane-col-width);
-  flex: none;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 0 10px 0 14px;
-  border-right: 1px solid var(--line);
-  background: var(--panel);
-}
-
-.track__name {
-  flex: 1;
-  min-width: 0;
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--txt);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.track__count {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  color: var(--dim2);
-}
-
-.track__add {
-  width: 20px;
-  height: 20px;
-  flex: none;
-  border-radius: 6px;
-  border: 1px solid var(--line);
-  background: var(--elev);
-  color: var(--dim);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.track__add:hover {
-  color: var(--acc2);
-  border-color: var(--acc);
-}
-
-.track__lane {
-  flex: 1;
-  position: relative;
-  background: var(--lane);
-}
-
-.track__lane--dragging {
-  cursor: ew-resize;
-}
-
-.kf {
-  position: absolute;
-  top: 50%;
-  width: 11px;
-  height: 11px;
-  margin: -6px 0 0 -6px;
-  padding: 0;
-  border: 1px solid var(--acc);
-  background: var(--track);
-  transform: rotate(45deg);
-  border-radius: 2px;
-  cursor: pointer;
-}
-
-.kf:hover {
-  background: var(--elev);
-}
-
-.kf--selected {
-  background: var(--acc);
-  border-color: var(--acc2);
-  box-shadow: 0 0 0 2px #14b8a64d;
-}
-</style>

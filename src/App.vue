@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import EditorLayout from './components/EditorLayout.vue';
+import EditorLayout from './components/EditorLayout/EditorLayout.vue';
 </script>
 
 <template>

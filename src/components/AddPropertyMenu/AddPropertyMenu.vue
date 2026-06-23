@@ -9,6 +9,7 @@ import {
 } from '@/core/properties';
 import type { AnimatableProperty } from '@/types/track';
 import { useDocumentStore } from '@/stores/document';
+import styles from './AddPropertyMenu.module.css';
 
 // Grouped add-property menu (M2, Epic 6): Transform / Appearance / Filters,
 // showing only inactive properties. Drop-shadow's three tracks (X/Y/colour)
@@ -56,16 +57,16 @@ function add(entry: MenuEntry): void {
 </script>
 
 <template>
-  <div class="add-menu__backdrop" @click="emit('close')" />
-  <div class="add-menu" data-testid="add-property-menu">
-    <p v-if="allAdded" class="add-menu__empty">All properties added.</p>
-    <div v-for="entry in groups" v-else :key="entry.group" class="add-menu__group">
-      <div class="add-menu__title">{{ entry.group }}</div>
+  <div :class="styles.backdrop" @click="emit('close')" />
+  <div :class="styles.menu" data-testid="add-property-menu">
+    <p v-if="allAdded" :class="styles.empty">All properties added.</p>
+    <div v-for="entry in groups" v-else :key="entry.group" :class="styles.group">
+      <div :class="styles.title">{{ entry.group }}</div>
       <button
         v-for="item in entry.items"
         :key="item.key"
         type="button"
-        class="add-menu__item"
+        :class="styles.item"
         :data-testid="`add-prop-${item.key}`"
         @click="add(item)"
       >
@@ -74,66 +75,3 @@ function add(entry: MenuEntry): void {
     </div>
   </div>
 </template>
-
-<style scoped>
-.add-menu__backdrop {
-  position: fixed;
-  inset: 0;
-  z-index: 20;
-}
-
-.add-menu {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: calc(100% + 6px);
-  z-index: 21;
-  background: var(--panel);
-  border: 1px solid var(--line);
-  border-radius: 11px;
-  padding: 6px;
-  box-shadow: 0 18px 50px -14px #000;
-  max-height: 320px;
-  overflow-y: auto;
-}
-
-.add-menu__empty {
-  margin: 0;
-  padding: 14px;
-  text-align: center;
-  color: var(--dim2);
-  font-size: 11.5px;
-}
-
-.add-menu__group + .add-menu__group {
-  margin-top: 4px;
-}
-
-.add-menu__title {
-  padding: 6px 9px 3px;
-  font-size: 10px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--dim2);
-  font-weight: 700;
-}
-
-.add-menu__item {
-  display: block;
-  width: 100%;
-  padding: 8px 9px;
-  border-radius: 7px;
-  border: none;
-  background: none;
-  color: var(--txt);
-  font-family: inherit;
-  font-size: 12.5px;
-  font-weight: 600;
-  cursor: pointer;
-  text-align: left;
-}
-
-.add-menu__item:hover {
-  background: var(--panel2);
-}
-</style>

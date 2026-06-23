@@ -1,0 +1,87 @@
+.track {
+  height: var(--lane-height);
+  flex: none;
+  display: flex;
+  border-bottom: 1px solid var(--line);
+}
+
+.labelCol {
+  width: var(--lane-col-width);
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 10px 0 14px;
+  border-right: 1px solid var(--line);
+  background: var(--panel);
+}
+
+.name {
+  flex: 1;
+  min-width: 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--txt);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.count {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--dim2);
+}
+
+.add {
+  width: 20px;
+  height: 20px;
+  flex: none;
+  border-radius: 6px;
+  border: 1px solid var(--line);
+  background: var(--elev);
+  color: var(--dim);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.add:hover {
+  color: var(--acc2);
+  border-color: var(--acc);
+}
+
+.lane {
+  flex: 1;
+  position: relative;
+  background: var(--lane);
+}
+
+.dragging {
+  cursor: ew-resize;
+}
+
+.kf {
+  position: absolute;
+  top: 50%;
+  width: 11px;
+  height: 11px;
+  margin: -6px 0 0 -6px;
+  padding: 0;
+  border: 1px solid var(--acc);
+  background: var(--track);
+  transform: rotate(45deg);
+  border-radius: 2px;
+  cursor: pointer;
+}
+
+.kf:hover {
+  background: var(--elev);
+}
+
+.selected {
+  background: var(--acc);
+  border-color: var(--acc2);
+  box-shadow: 0 0 0 2px #14b8a64d;
+}

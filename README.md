@@ -108,7 +108,7 @@ src/
 ├── composables/  # Vue glue: rAF playback loop, keyboard shortcuts, autosave
 ├── types/        # data model (Keyframe, Track, SceneElement, AnimationDocument)
 ├── stores/       # Pinia document + transient playback + persistence stores
-├── components/   # Vue UI (EditorLayout + panes)
+├── components/   # Vue UI — one folder per component (Name.vue + Name.module.css + Name.spec.ts)
 └── assets/       # design tokens + base styles (ported from the Kinetic demo)
 ```
 

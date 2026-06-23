@@ -59,7 +59,7 @@ test('add keyframes, select one, and delete it', async ({ page }) => {
 
   // Select the first diamond, then delete it with the keyboard.
   await page.getByTestId('keyframe').first().click();
-  await expect(page.locator('.kf--selected')).toHaveCount(1);
+  await expect(page.locator('[data-selected="true"]')).toHaveCount(1);
 
   await page.keyboard.press('Delete');
   await expect(page.getByTestId('keyframe')).toHaveCount(1);

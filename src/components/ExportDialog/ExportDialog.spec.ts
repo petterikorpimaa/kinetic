@@ -88,7 +88,7 @@ describe('ExportDialog', () => {
 
   it('emits close when the backdrop is clicked', async () => {
     const wrapper = mountDialog();
-    await wrapper.find('.overlay').trigger('click');
+    await wrapper.find('[data-testid="export-overlay"]').trigger('click');
     expect(wrapper.emitted('close')).toBeTruthy();
   });
 });

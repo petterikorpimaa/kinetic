@@ -1,0 +1,140 @@
+.easing {
+  border-top: 1px solid var(--line);
+  padding: 12px 14px 16px;
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--txt);
+  cursor: pointer;
+}
+
+.title {
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--dim2);
+  font-weight: 700;
+}
+
+.badge {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--acc2);
+  font-family: var(--font-mono);
+}
+
+.chev {
+  margin-left: auto;
+  color: var(--dim2);
+  transition: transform 0.15s;
+}
+
+.open {
+  transform: rotate(180deg);
+}
+
+.body {
+  margin-top: 12px;
+}
+
+.empty,
+.multi {
+  margin: 0 0 12px;
+  padding: 14px;
+  text-align: center;
+  border: 1px dashed var(--line);
+  border-radius: 11px;
+  color: var(--dim2);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.curve {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  margin-bottom: 12px;
+  background: var(--track);
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  overflow: visible;
+}
+
+.axis {
+  stroke: var(--line);
+  stroke-width: 1;
+}
+
+.guide {
+  stroke: var(--dim2);
+  stroke-width: 0.75;
+  stroke-dasharray: 3 3;
+  opacity: 0.55;
+}
+
+.handleLine {
+  stroke: var(--dim2);
+  stroke-width: 0.5;
+}
+
+.path {
+  fill: none;
+  stroke: var(--acc2);
+  stroke-width: 2;
+}
+
+.handle {
+  fill: var(--acc);
+  stroke: #fff;
+  stroke-width: 1.5;
+  cursor: grab;
+  touch-action: none;
+}
+
+.handle:active {
+  cursor: grabbing;
+}
+
+.presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.preset {
+  padding: 5px 10px;
+  border-radius: 7px;
+  border: 1px solid var(--line);
+  background: var(--elev);
+  color: var(--dim);
+  font-family: inherit;
+  font-size: 11.5px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.preset:hover {
+  color: var(--txt);
+}
+
+.active {
+  color: var(--acc2);
+  border-color: var(--acc);
+  background: #14b8a61f;
+}
+
+.readout {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--dim);
+  text-align: center;
+  word-break: break-all;
+}

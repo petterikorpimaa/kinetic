@@ -1,0 +1,194 @@
+.raster {
+  min-height: 380px;
+  max-height: 56vh;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.blocked {
+  margin: auto;
+  color: var(--dim);
+  font-size: 13px;
+}
+
+.options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  align-items: flex-end;
+}
+
+.opt {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.inline {
+  flex-direction: row;
+  align-items: center;
+  gap: 7px;
+  height: 32px;
+}
+
+.optLabel {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--dim);
+}
+
+.optField {
+  height: 32px;
+  width: 96px;
+  padding: 0 9px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: var(--elev);
+  color: var(--txt);
+  font-family: inherit;
+  font-size: 12px;
+}
+
+.optBg {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 32px;
+}
+
+.optColor {
+  width: 36px;
+  height: 28px;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: none;
+  cursor: pointer;
+}
+
+.optColor:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.optCheck {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--dim);
+  cursor: pointer;
+}
+
+.note {
+  margin: 0;
+  font-size: 11.5px;
+  color: var(--dim2);
+}
+
+.stage {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: var(--track);
+  padding: 16px;
+  overflow: hidden;
+}
+
+.preview {
+  max-width: 100%;
+  max-height: 100%;
+  border-radius: 8px;
+  background: repeating-conic-gradient(#ffffff10 0% 25%, transparent 0% 50%) 50% / 18px 18px;
+}
+
+.placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  color: var(--dim2);
+  font-size: 12.5px;
+}
+
+.error {
+  margin: 0;
+  color: #f87171;
+  font-size: 12.5px;
+}
+
+.progress {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: min(80%, 320px);
+}
+
+.spin {
+  color: var(--acc2);
+  animation: raster-spin 0.9s linear infinite;
+}
+
+@keyframes raster-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.bar {
+  width: 100%;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--elev);
+  overflow: hidden;
+}
+
+.bar span {
+  display: block;
+  height: 100%;
+  background: var(--acc);
+  transition: width 0.15s ease;
+}
+
+.count {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--dim);
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.btn {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  height: 34px;
+  padding: 0 13px;
+  border-radius: 9px;
+  border: 1px solid var(--line);
+  background: var(--elev);
+  color: var(--txt);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btn:hover {
+  border-color: var(--dim2);
+}
+
+.primary {
+  border-color: var(--acc);
+  color: var(--acc2);
+}

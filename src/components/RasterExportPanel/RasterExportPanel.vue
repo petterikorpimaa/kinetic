@@ -4,6 +4,7 @@ import { Download, Loader, Film, Square } from '@lucide/vue';
 import { useDocumentStore } from '@/stores/document';
 import { exportRaster, type RasterFormat } from '@/render/rasterExport';
 import { isWebmSupported } from '@/render/encodeWebm';
+import styles from './RasterExportPanel.module.css';
 
 // Render-and-download panel for the raster export formats (GIF, WebM video).
 // Unlike the code tabs there is no text to preview — the user picks options,
@@ -124,71 +125,71 @@ onBeforeUnmount(revokeResult);
 </script>
 
 <template>
-  <div class="raster" data-testid="raster-panel">
-    <p v-if="blocked" class="raster__blocked">{{ blocked }}</p>
+  <div :class="styles.raster" data-testid="raster-panel">
+    <p v-if="blocked" :class="styles.blocked">{{ blocked }}</p>
 
     <template v-else>
-      <div class="raster__options">
-        <label class="opt">
-          <span class="opt__label">Size</span>
-          <select v-model.number="scale" class="opt__field" data-testid="raster-scale">
+      <div :class="styles.options">
+        <label :class="styles.opt">
+          <span :class="styles.optLabel">Size</span>
+          <select v-model.number="scale" :class="styles.optField" data-testid="raster-scale">
             <option v-for="value in SCALE_OPTIONS" :key="value" :value="value">{{ value }}×</option>
           </select>
         </label>
 
-        <label class="opt">
-          <span class="opt__label">FPS</span>
+        <label :class="styles.opt">
+          <span :class="styles.optLabel">FPS</span>
           <input
             v-model.number="fps"
             type="number"
             min="1"
             max="60"
-            class="opt__field"
+            :class="styles.optField"
             data-testid="raster-fps"
           />
         </label>
 
-        <label class="opt">
-          <span class="opt__label">Background</span>
-          <span class="opt__bg">
+        <label :class="styles.opt">
+          <span :class="styles.optLabel">Background</span>
+          <span :class="styles.optBg">
             <input
               type="color"
               :value="background"
               :disabled="transparent"
-              class="opt__color"
+              :class="styles.optColor"
               @input="background = ($event.target as HTMLInputElement).value"
             />
-            <label class="opt__check">
+            <label :class="styles.optCheck">
               <input v-model="transparent" type="checkbox" />
               Transparent
             </label>
           </span>
         </label>
 
-        <label v-if="!isVideo" class="opt opt--inline">
+        <label v-if="!isVideo" :class="[styles.opt, styles.inline]">
           <input v-model="loop" type="checkbox" />
-          <span class="opt__label">Loop forever</span>
+          <span :class="styles.optLabel">Loop forever</span>
         </label>
       </div>
 
-      <p v-if="isVideo" class="raster__note">
+      <p v-if="isVideo" :class="styles.note">
         WebM records in real time, so a {{ store.document.duration }}s clip takes about that long to
         capture.
       </p>
 
-      <div class="raster__stage">
+      <div :class="styles.stage">
         <template v-if="phase === 'done' && resultUrl">
           <img
             v-if="!isVideo"
             :src="resultUrl"
-            class="raster__preview"
+            :class="styles.preview"
             data-testid="raster-preview"
             alt="Rendered GIF preview"
           />
           <video
             v-else
             :src="resultUrl"
-            class="raster__preview"
+            :class="styles.preview"
             data-testid="raster-preview"
             autoplay
             loop
@@ -196,23 +197,23 @@ onBeforeUnmount(revokeResult);
             playsinline
           />
         </template>
-        <p v-else-if="phase === 'error'" class="raster__error">{{ errorMessage }}</p>
-        <div v-else-if="phase === 'rendering'" class="raster__progress">
-          <Loader :size="22" :stroke-width="1.6" class="raster__spin" />
-          <div class="raster__bar"><span :style="{ width: `${progressPct}%` }" /></div>
-          <span class="raster__count">{{ done }} / {{ total }} frames</span>
+        <p v-else-if="phase === 'error'" :class="styles.error">{{ errorMessage }}</p>
+        <div v-else-if="phase === 'rendering'" :class="styles.progress">
+          <Loader :size="22" :stroke-width="1.6" :class="styles.spin" />
+          <div :class="styles.bar"><span :style="{ width: `${progressPct}%` }" /></div>
+          <span :class="styles.count">{{ done }} / {{ total }} frames</span>
         </div>
-        <div v-else class="raster__placeholder">
+        <div v-else :class="styles.placeholder">
           <Film :size="26" :stroke-width="1.2" />
           <span>Render to preview your {{ formatLabel }}.</span>
         </div>
       </div>
 
-      <div class="raster__actions">
+      <div :class="styles.actions">
         <button
           v-if="phase === 'rendering'"
           type="button"
-          class="btn"
+          :class="styles.btn"
           data-testid="raster-cancel"
           @click="cancel"
         >
@@ -222,7 +223,7 @@ onBeforeUnmount(revokeResult);
         <button
           v-else
           type="button"
-          class="btn btn--primary"
+          :class="[styles.btn, styles.primary]"
           data-testid="raster-render"
           @click="render"
         >
@@ -233,7 +234,7 @@ onBeforeUnmount(revokeResult);
         <button
           v-if="phase === 'done'"
           type="button"
-          class="btn"
+          :class="styles.btn"
           data-testid="raster-download"
           @click="download"
         >
@@ -244,200 +245,3 @@ onBeforeUnmount(revokeResult);
     </template>
   </div>
 </template>
-
-<style scoped>
-.raster {
-  min-height: 380px;
-  max-height: 56vh;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-.raster__blocked {
-  margin: auto;
-  color: var(--dim);
-  font-size: 13px;
-}
-
-.raster__options {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 14px;
-  align-items: flex-end;
-}
-
-.opt {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.opt--inline {
-  flex-direction: row;
-  align-items: center;
-  gap: 7px;
-  height: 32px;
-}
-
-.opt__label {
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--dim);
-}
-
-.opt__field {
-  height: 32px;
-  width: 96px;
-  padding: 0 9px;
-  border-radius: 8px;
-  border: 1px solid var(--line);
-  background: var(--elev);
-  color: var(--txt);
-  font-family: inherit;
-  font-size: 12px;
-}
-
-.opt__bg {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  height: 32px;
-}
-
-.opt__color {
-  width: 36px;
-  height: 28px;
-  padding: 0;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: none;
-  cursor: pointer;
-}
-
-.opt__color:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-
-.opt__check {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 12px;
-  color: var(--dim);
-  cursor: pointer;
-}
-
-.raster__note {
-  margin: 0;
-  font-size: 11.5px;
-  color: var(--dim2);
-}
-
-.raster__stage {
-  flex: 1;
-  min-height: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 12px;
-  border: 1px solid var(--line);
-  background: var(--track);
-  padding: 16px;
-  overflow: hidden;
-}
-
-.raster__preview {
-  max-width: 100%;
-  max-height: 100%;
-  border-radius: 8px;
-  background: repeating-conic-gradient(#ffffff10 0% 25%, transparent 0% 50%) 50% / 18px 18px;
-}
-
-.raster__placeholder {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-  color: var(--dim2);
-  font-size: 12.5px;
-}
-
-.raster__error {
-  margin: 0;
-  color: #f87171;
-  font-size: 12.5px;
-}
-
-.raster__progress {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
-  width: min(80%, 320px);
-}
-
-.raster__spin {
-  color: var(--acc2);
-  animation: raster-spin 0.9s linear infinite;
-}
-
-@keyframes raster-spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.raster__bar {
-  width: 100%;
-  height: 6px;
-  border-radius: 999px;
-  background: var(--elev);
-  overflow: hidden;
-}
-
-.raster__bar span {
-  display: block;
-  height: 100%;
-  background: var(--acc);
-  transition: width 0.15s ease;
-}
-
-.raster__count {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  color: var(--dim);
-}
-
-.raster__actions {
-  display: flex;
-  gap: 8px;
-  justify-content: flex-end;
-}
-
-.btn {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  height: 34px;
-  padding: 0 13px;
-  border-radius: 9px;
-  border: 1px solid var(--line);
-  background: var(--elev);
-  color: var(--txt);
-  font-family: inherit;
-  font-size: 12px;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.btn:hover {
-  border-color: var(--dim2);
-}
-
-.btn--primary {
-  border-color: var(--acc);
-  color: var(--acc2);
-}
-</style>

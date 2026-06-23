@@ -3,6 +3,7 @@ import { ref, computed } from 'vue';
 import { useDocumentStore } from '@/stores/document';
 import { usePlaybackStore } from '@/stores/playback';
 import { buildTicks, fractionToTime } from '@/core/timeline';
+import styles from './TimelineRuler.module.css';
 
 // Adaptive tick ruler with click/drag scrubbing (M3, Epic 7). Scrubbing pauses
 // playback and seeks the shared playhead; the playhead line is drawn by the
@@ -39,41 +40,14 @@ function startScrub(event: PointerEvent): void {
 </script>
 
 <template>
-  <div ref="rulerRef" class="ruler" data-testid="timeline-ruler" @pointerdown="startScrub">
+  <div ref="rulerRef" :class="styles.ruler" data-testid="timeline-ruler" @pointerdown="startScrub">
     <div
       v-for="(tick, i) in ticks"
       :key="i"
-      class="ruler__tick"
+      :class="styles.tick"
       :style="{ left: `${tick.fraction * 100}%` }"
     >
-      <span v-if="tick.label" class="ruler__label">{{ tick.label }}</span>
+      <span v-if="tick.label" :class="styles.label">{{ tick.label }}</span>
     </div>
   </div>
 </template>
-
-<style scoped>
-.ruler {
-  flex: 1;
-  position: relative;
-  overflow: hidden;
-  background: var(--panel);
-  cursor: pointer;
-}
-
-.ruler__tick {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 1px;
-  background: #ffffff0f;
-}
-
-.ruler__label {
-  position: absolute;
-  top: 6px;
-  left: 4px;
-  font-family: var(--font-mono);
-  font-size: 9.5px;
-  color: var(--dim2);
-}
-</style>
