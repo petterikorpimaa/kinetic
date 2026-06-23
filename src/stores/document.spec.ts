@@ -24,6 +24,13 @@ function documentWithElements(ids: readonly string[]): AnimationDocument {
   };
 }
 
+function documentWithTaggedElement(id: string, tag: string): AnimationDocument {
+  return {
+    ...createEmptyDocument('doc', 'Fixture'),
+    elements: [{ ...elementFixture(id), tag }],
+  };
+}
+
 describe('useDocumentStore', () => {
   beforeEach(() => {
     setActivePinia(createPinia());
@@ -149,6 +156,43 @@ describe('useDocumentStore', () => {
     expect(store.trackFor('a', 'x')).toBeDefined();
   });
 
+  it('refuses to add a property the shape does not support', () => {
+    const store = useDocumentStore();
+    store.loadDocument(documentWithTaggedElement('g1', 'g'));
+
+    store.addProperty('g1', 'draw'); // a group has no path length
+    expect(store.trackFor('g1', 'draw')).toBeUndefined();
+    expect(store.canUndo).toBe(false); // no-op leaves history untouched
+
+    store.addProperty('g1', 'fill'); // groups cascade fill — supported
+    expect(store.trackFor('g1', 'fill')).toBeDefined();
+  });
+
+  it('moveElement re-nests a layer in one undoable commit', () => {
+    const store = useDocumentStore();
+    const grouped =
+      '<svg viewBox="0 0 100 100"><g id="badge"><path id="petal"/><circle id="core"/></g><rect id="box"/></svg>';
+    store.importSvg(grouped, 'grouped.svg');
+    expect(store.document.elements.map((e) => e.id)).toEqual(['badge', 'petal', 'core', 'box']);
+    expect(store.canUndo).toBe(false); // import resets history
+
+    store.moveElement('box', 'badge', 'inside');
+    expect(store.document.elements.find((e) => e.id === 'box')?.parentId).toBe('badge');
+    expect(store.document.svgMarkup).toContain('data-anim-id="box"');
+
+    store.undo();
+    expect(store.document.elements.find((e) => e.id === 'box')?.parentId).toBeUndefined();
+  });
+
+  it('moveElement ignores an impossible move (into its own subtree)', () => {
+    const store = useDocumentStore();
+    const grouped = '<svg viewBox="0 0 100 100"><g id="badge"><path id="petal"/></g></svg>';
+    store.importSvg(grouped, 'grouped.svg');
+    store.moveElement('badge', 'petal', 'after');
+    expect(store.canUndo).toBe(false); // no-op, history untouched
+    expect(store.document.elements.map((e) => e.id)).toEqual(['badge', 'petal']);
+  });
+
   it('upserts a keyframe at the playhead via setNumberValue', () => {
     const store = useDocumentStore();
     store.loadDocument(documentWithElements(['a']));
@@ -174,6 +218,21 @@ describe('useDocumentStore', () => {
 
     store.setColorValue('a', 'fill', 0, '#ff0000');
     expect(store.trackFor('a', 'fill')?.keyframes[0]?.value).toBe('#ff0000');
+  });
+
+  it('removeKeyframeAt drops the keyframe in the snap window, leaving others', () => {
+    const store = useDocumentStore();
+    store.loadDocument(documentWithElements(['a']));
+    store.setNumberValue('a', 'x', 0, 0);
+    store.setNumberValue('a', 'x', 1, 100);
+
+    // Within the snap window of t=1 → removes that keyframe only.
+    store.removeKeyframeAt('a', 'x', 1.02);
+    expect(store.trackFor('a', 'x')?.keyframes.map((k) => k.time)).toEqual([0]);
+
+    // No keyframe near the time → no-op (and the track stays).
+    store.removeKeyframeAt('a', 'x', 0.5);
+    expect(store.trackFor('a', 'x')?.keyframes.map((k) => k.time)).toEqual([0]);
   });
 
   function keyframeId(store: ReturnType<typeof useDocumentStore>, time: number): string {

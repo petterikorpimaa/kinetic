@@ -202,3 +202,22 @@ tl.to('[data-anim-id="orb"]', { opacity: 0, duration: 1, ease: CustomEase.create
     );
   });
 });
+
+describe('exportGsap — nested elements (SVG-138)', () => {
+  it('targets a nested element by its data-anim-id', () => {
+    const group = element({ id: 'grp', domRef: 'grp', tag: 'g', label: 'Group 1' });
+    const child = element({
+      id: 'p1',
+      domRef: 'p1',
+      tag: 'path',
+      label: 'Path 2',
+      parentId: 'grp',
+    });
+    const track = numTrack('opacity', [
+      [0, 0, LINEAR],
+      [1, 1, LINEAR],
+    ]);
+    const code = exportGsap(doc([{ ...track, elementId: 'p1' }], { elements: [group, child] }));
+    expect(code).toContain('[data-anim-id="p1"]');
+  });
+});

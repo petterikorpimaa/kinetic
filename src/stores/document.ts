@@ -13,6 +13,8 @@ import {
 } from '@/core/sampleAnimation';
 import { DEFAULT_EASING } from '@/core/presets';
 import { snapTime, clampTime } from '@/core/timeline';
+import { isPropertySupported } from '@/core/shapeProperties';
+import { applyLayerMove, type DropPosition } from '@/core/reorderLayers';
 import { produceWithPatches, type Draft } from '@/core/immer';
 import {
   createHistory,
@@ -191,13 +193,37 @@ export const useDocumentStore = defineStore('document', () => {
     );
   }
 
-  /** Make a property active by creating an empty track (no keyframes yet). */
+  /**
+   * Make a property active by creating an empty track (no keyframes yet).
+   * No-ops when the element's shape type can't support the property (SVG-156),
+   * so the UI gate can't be bypassed.
+   */
   function addProperty(elementId: string, property: AnimatableProperty): void {
+    const element = document.value.elements.find((candidate) => candidate.id === elementId);
+    if (element !== undefined && !isPropertySupported(element.tag, property)) return;
     commit('add property', (draft) => {
       const tracks = draft.tracks as unknown as MutableTrack[];
       const exists = tracks.some((t) => t.elementId === elementId && t.property === property);
       if (exists) return;
       tracks.push({ id: newId(), elementId, property, keyframes: [] });
+    });
+  }
+
+  /**
+   * Drag-reorder / re-nest a layer (SVG-157). Moves the node in the SVG DOM and
+   * re-derives the flat model so canvas + export follow; one undoable commit.
+   * No-ops on an impossible move (missing nodes, self, own subtree, non-container).
+   */
+  function moveElement(dragId: string, targetId: string, position: DropPosition): void {
+    const result = applyLayerMove(document.value.svgMarkup, document.value.elements, {
+      dragId,
+      targetId,
+      position,
+    });
+    if (result === null) return;
+    commit('reorder layers', (draft) => {
+      draft.svgMarkup = result.svgMarkup;
+      draft.elements = result.elements;
     });
   }
 
@@ -227,6 +253,24 @@ export const useDocumentStore = defineStore('document', () => {
     value: string,
   ): void {
     commit('set value', (draft) => upsertKeyframe(draft, elementId, property, time, value));
+  }
+
+  /** Drop the keyframe sitting at `time` (within the snap window), if any. */
+  function removeKeyframeAt(elementId: string, property: AnimatableProperty, time: number): void {
+    const track = document.value.tracks.find(
+      (t) => t.elementId === elementId && t.property === property,
+    );
+    if (track === undefined) return;
+    const hasKey = track.keyframes.some((k) => Math.abs(k.time - time) < KEYFRAME_SNAP_SECONDS);
+    if (!hasKey) return;
+    commit('remove keyframe', (draft) => {
+      const tracks = draft.tracks as unknown as MutableTrack[];
+      const target = tracks.find((t) => t.elementId === elementId && t.property === property);
+      if (target === undefined) return;
+      target.keyframes = target.keyframes.filter(
+        (k) => Math.abs(k.time - time) >= KEYFRAME_SNAP_SECONDS,
+      );
+    });
   }
 
   function isKeyframeSelected(keyframeId: string): boolean {
@@ -376,8 +420,10 @@ export const useDocumentStore = defineStore('document', () => {
     trackFor,
     addProperty,
     removeProperty,
+    moveElement,
     setNumberValue,
     setColorValue,
+    removeKeyframeAt,
     isKeyframeSelected,
     selectKeyframe,
     selectKeyframes,

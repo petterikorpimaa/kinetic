@@ -16,34 +16,6 @@
   white-space: nowrap;
 }
 
-.control {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  min-width: 0;
-}
-
-.input {
-  flex: 1;
-  min-width: 0;
-  --field-h: 28px;
-  --field-radius: 7px;
-  --field-bg: var(--track);
-  --field-font: var(--font-mono);
-  --field-fs: 12px;
-}
-
-.hex {
-  text-transform: lowercase;
-}
-
-.unit {
-  flex: none;
-  font-size: 11px;
-  color: var(--dim2);
-}
-
 /* Add-keyframe ◆ — accent fill comes from :active; resting bg stays clear. */
 .key {
   --btn-square: 28px;

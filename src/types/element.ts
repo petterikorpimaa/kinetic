@@ -8,6 +8,12 @@ export interface SceneElement {
   readonly id: string;
   /** `data-anim-id` attribute value used to locate the node in the SVG. */
   readonly domRef: string;
+  /**
+   * Id of the containing group, or absent for a top-level element. Elements are
+   * stored flat in document order (pre-order); the layer tree is derived from
+   * this link. Structural parsing only — animatable parenting stays v2 (SVG-124).
+   */
+  readonly parentId?: string;
   /** SVG tag name (circle, rect, path, g, …). */
   readonly tag: string;
   /** Human-friendly, editable name (tag + index by default). */

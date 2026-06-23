@@ -291,8 +291,44 @@ describe('exportCss — colour, draw, filters', () => {
         ]),
       ]),
     );
-    expect(css).toContain('filter: brightness(1) drop-shadow(0px 4px #000000);');
-    expect(css).toContain('filter: brightness(2) drop-shadow(6px 4px #000000);');
+    expect(css).toContain('filter: brightness(1) drop-shadow(0px 4px 4px #000000);');
+    expect(css).toContain('filter: brightness(2) drop-shadow(6px 4px 4px #000000);');
+  });
+});
+
+describe('exportCss — per-axis scale, skew & stroke', () => {
+  it('emits a two-arg scale and skew functions when those tracks animate', () => {
+    const css = exportCss(
+      doc([
+        numTrack('scaleX', [
+          [0, 1],
+          [1, 2],
+        ]),
+        numTrack('skewX', [
+          [0, 0],
+          [1, 30],
+        ]),
+      ]),
+    );
+    // scaleY defaults to 1, so the x/y factors differ → comma form.
+    expect(css).toContain('scale(2, 1) skewX(30deg)');
+  });
+
+  it('animates stroke colour and width as their own channels', () => {
+    const css = exportCss(
+      doc([
+        colTrack('stroke', [
+          [0, '#000000'],
+          [1, '#ffffff'],
+        ]),
+        numTrack('strokeWidth', [
+          [0, 1],
+          [1, 5],
+        ]),
+      ]),
+    );
+    expect(css).toContain('100% { stroke: #ffffff;');
+    expect(css).toContain('100% { stroke-width: 5;');
   });
 });
 
@@ -330,5 +366,25 @@ describe('exportCss — golden output', () => {
 }
 `,
     );
+  });
+});
+
+describe('exportCss — nested elements (SVG-138)', () => {
+  it('emits per-element rules keyed by each nested data-anim-id', () => {
+    const group = element({ id: 'grp', domRef: 'grp', tag: 'g', label: 'Group 1' });
+    const child = element({
+      id: 'p1',
+      domRef: 'p1',
+      tag: 'path',
+      label: 'Path 2',
+      parentId: 'grp',
+    });
+    const track = numTrack('opacity', [
+      [0, 0, LINEAR],
+      [1, 1, LINEAR],
+    ]);
+    const css = exportCss(doc([{ ...track, elementId: 'p1' }], { elements: [group, child] }));
+    expect(css).toContain('[data-anim-id="p1"]');
+    expect(css).toContain('@keyframes p1-opacity');
   });
 });

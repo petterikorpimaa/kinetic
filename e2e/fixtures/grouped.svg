@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <defs>
+    <clipPath id="clip0">
+      <rect x="0" y="0" width="100" height="100" />
+    </clipPath>
+  </defs>
+  <g id="badge" data-name="Badge" clip-path="url(#clip0)">
+    <path id="petal" data-name="Petal" d="M50 10 L60 50 L50 90 L40 50 Z" fill="#14b8a6" />
+    <circle id="core" data-name="Core" cx="50" cy="50" r="12" fill="#f59e0b" />
+  </g>
+  <rect id="frame" data-name="Frame" x="4" y="4" width="92" height="92" fill="none" stroke="#888" />
+</svg>

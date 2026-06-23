@@ -104,6 +104,30 @@ describe('persistence — rejecting bad data', () => {
     const json = JSON.stringify({ schemaVersion: 1, savedAt: 0, document: hostile });
     expect(deserializeEnvelope(json)).toBeNull();
   });
+
+  it('rejects an element whose parentId is not a string', () => {
+    const doc = sampleDoc();
+    const bad = { ...doc, elements: [{ ...doc.elements[0], parentId: 42 }] };
+    const json = JSON.stringify({ schemaVersion: 1, savedAt: 0, document: bad });
+    expect(deserializeEnvelope(json)).toBeNull();
+  });
+});
+
+describe('persistence — nested hierarchy (SVG-136)', () => {
+  it('round-trips a nested element with its parent link', () => {
+    const doc = sampleDoc();
+    const nested: AnimationDocument = {
+      ...doc,
+      elements: [
+        { ...doc.elements[0]!, id: 'grp', domRef: 'grp', tag: 'g', label: 'Group 1' },
+        { ...doc.elements[0]!, parentId: 'grp' },
+      ],
+    };
+    const restored = deserializeEnvelope(serializeDocument(nested, 1));
+    expect(restored).not.toBeNull();
+    expect(restored!.document.elements[1]!.parentId).toBe('grp');
+    expect(restored!.document.elements[0]!.parentId).toBeUndefined();
+  });
 });
 
 describe('persistence — migration', () => {

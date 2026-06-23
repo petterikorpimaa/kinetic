@@ -48,4 +48,15 @@ describe('planRasterExport', () => {
     expect(low.fps).toBe(MIN_FPS);
     expect(low.scale).toBe(MIN_SCALE);
   });
+
+  it('defaults the crop to null (full viewBox)', () => {
+    expect(planRasterExport(doc(), {}).crop).toBeNull();
+  });
+
+  it('sizes the output to the crop region when fit-content is given (SVG-143)', () => {
+    const plan = planRasterExport(doc(), { scale: 2, crop: { x: 40, y: 20, w: 60, h: 30 } });
+    expect(plan.width).toBe(120); // 60 * 2, not the 200-wide viewBox
+    expect(plan.height).toBe(60); // 30 * 2
+    expect(plan.crop).toEqual({ x: 40, y: 20, w: 60, h: 30 });
+  });
 });

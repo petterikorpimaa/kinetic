@@ -1,0 +1,47 @@
+.control {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+/* The bordered field shell. The inner input drops its own border/background so
+   the value, its unit, and any #suffix (e.g. the group's expand chevron) read as
+   one control. */
+.box {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 28px;
+  padding: 0 9px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: var(--track);
+}
+
+.input {
+  flex: 1;
+  min-width: 0;
+  --field-h: 26px;
+  --field-px: 0;
+  --field-font: var(--font-mono);
+  --field-fs: 12px;
+}
+
+.box input {
+  border: none;
+  background: transparent;
+}
+
+.hex input {
+  text-transform: lowercase;
+}
+
+.unit {
+  flex: none;
+  font-size: 11px;
+  color: var(--dim2);
+}

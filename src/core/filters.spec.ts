@@ -31,8 +31,8 @@ describe('scalarFilterCss', () => {
 });
 
 describe('dropShadowCss', () => {
-  it('composes offset and colour', () => {
-    expect(dropShadowCss(3, -2, '#000000')).toBe('drop-shadow(3px -2px #000000)');
+  it('composes offset, blur and colour', () => {
+    expect(dropShadowCss(3, -2, 5, '#000000')).toBe('drop-shadow(3px -2px 5px #000000)');
   });
 });
 

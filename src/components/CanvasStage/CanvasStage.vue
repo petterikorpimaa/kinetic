@@ -184,6 +184,8 @@ function baselineVisual(base: NodeBaseline): ElementVisual {
     transform: base.transform,
     opacity: base.opacity,
     fill: base.fill,
+    stroke: base.stroke,
+    strokeWidth: base.strokeWidth,
     strokeDasharray: '',
     strokeDashoffset: '',
     filter: base.filter,
@@ -239,6 +241,8 @@ function mountSvg(): void {
       transform: node.getAttribute('transform'),
       opacity: node.getAttribute('opacity'),
       fill: node.getAttribute('fill'),
+      stroke: node.getAttribute('stroke'),
+      strokeWidth: node.getAttribute('stroke-width'),
       filter: node.style.filter,
     });
     metrics.push(measureNode(node, id));

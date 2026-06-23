@@ -12,6 +12,8 @@ export async function loadCleanSlate(page: Page): Promise<void> {
     .getByTestId('import-dialog')
     .locator('input[type="file"]')
     .setInputFiles('e2e/fixtures/clean.svg');
+  // The dialog now previews first; confirm to commit the import (SVG-139).
+  await page.getByTestId('import-confirm').click();
   await expect(page.getByTestId('import-dialog')).toBeHidden();
   await page.getByTestId('layers-panel').getByRole('button', { name: 'Shape' }).click();
 }

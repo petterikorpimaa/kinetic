@@ -39,6 +39,8 @@ function baselineOf(node: SVGGraphicsElement): NodeBaseline {
     transform: node.getAttribute('transform'),
     opacity: node.getAttribute('opacity'),
     fill: node.getAttribute('fill'),
+    stroke: node.getAttribute('stroke'),
+    strokeWidth: node.getAttribute('stroke-width'),
     filter: node.style.filter,
   };
 }

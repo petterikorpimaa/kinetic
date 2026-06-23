@@ -27,6 +27,8 @@ const fps = ref(store.document.fps);
 const background = ref('#ffffff');
 const transparent = ref(false);
 const loop = ref(true);
+// Fit-content crop: tightly frame the animation (no dead margins) (SVG-143).
+const fitContent = ref(false);
 
 const phase = ref<Phase>('idle');
 const done = ref(0);
@@ -83,6 +85,7 @@ async function render(): Promise<void> {
       fps: fps.value,
       background: transparent.value ? null : background.value,
       loop: loop.value,
+      cropToContent: fitContent.value,
       hiddenIds: store.hiddenElementIds,
       onProgress: (d, t) => {
         done.value = d;
@@ -133,7 +136,7 @@ function onFps(event: Event): void {
 }
 
 // Switching format or changing any option invalidates a rendered result.
-watch([() => props.format, scale, fps, background, transparent, loop], reset);
+watch([() => props.format, scale, fps, background, transparent, loop, fitContent], reset);
 
 onBeforeUnmount(revokeResult);
 </script>
@@ -195,6 +198,11 @@ onBeforeUnmount(revokeResult);
         <label v-if="!isVideo" :class="[styles.opt, styles.inline]">
           <input v-model="loop" type="checkbox" />
           <span :class="styles.optLabel">Loop forever</span>
+        </label>
+
+        <label :class="[styles.opt, styles.inline]">
+          <input v-model="fitContent" type="checkbox" data-testid="raster-fit" />
+          <span :class="styles.optLabel">Fit to content</span>
         </label>
       </div>
 

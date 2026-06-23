@@ -49,9 +49,9 @@ export function scalarFilterCss(property: ScalarFilter, value: number): string {
   }
 }
 
-/** A `drop-shadow()` from an offset (px) and a colour. */
-export function dropShadowCss(x: number, y: number, color: string): string {
-  return `drop-shadow(${x}px ${y}px ${color})`;
+/** A `drop-shadow()` from an offset (px), blur radius (px) and a colour. */
+export function dropShadowCss(x: number, y: number, blur: number, color: string): string {
+  return `drop-shadow(${x}px ${y}px ${blur}px ${color})`;
 }
 
 /** Join filter functions into a `filter` value, or `'none'` when there are none. */

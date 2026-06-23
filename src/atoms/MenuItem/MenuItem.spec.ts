@@ -27,4 +27,20 @@ describe('MenuItem', () => {
     const wrapper = mount(MenuItem, { props: { danger: true } });
     expect(wrapper.element.tagName).toBe('BUTTON');
   });
+
+  it('reflects disabled via aria-disabled and keeps the title tooltip hoverable', () => {
+    const wrapper = mount(MenuItem, {
+      props: { disabled: true },
+      attrs: { title: 'Not available' },
+    });
+    // aria-disabled (not the native disabled attribute) so hover still shows the tooltip.
+    expect(wrapper.attributes('aria-disabled')).toBe('true');
+    expect(wrapper.attributes('disabled')).toBeUndefined();
+    expect(wrapper.attributes('title')).toBe('Not available');
+  });
+
+  it('is not aria-disabled by default', () => {
+    const wrapper = mount(MenuItem);
+    expect(wrapper.attributes('aria-disabled')).toBeUndefined();
+  });
 });

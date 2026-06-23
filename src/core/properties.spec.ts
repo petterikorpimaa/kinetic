@@ -24,11 +24,17 @@ describe('property registry', () => {
       'x',
       'y',
       'scale',
+      'scaleX',
+      'scaleY',
       'rotation',
+      'skewX',
+      'skewY',
     ]);
     expect(propertiesInGroup('Appearance').map((def) => def.key)).toEqual([
       'opacity',
       'fill',
+      'stroke',
+      'strokeWidth',
       'draw',
     ]);
     expect(propertiesInGroup('Filters').map((def) => def.key)).toEqual([
@@ -42,6 +48,7 @@ describe('property registry', () => {
       'hue',
       'shadowX',
       'shadowY',
+      'shadowBlur',
       'shadowColor',
     ]);
   });

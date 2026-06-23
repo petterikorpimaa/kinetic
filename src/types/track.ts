@@ -9,8 +9,13 @@ export type NumericProperty =
   | 'x'
   | 'y'
   | 'scale'
+  | 'scaleX'
+  | 'scaleY'
   | 'rotation'
+  | 'skewX'
+  | 'skewY'
   | 'opacity'
+  | 'strokeWidth'
   | 'draw'
   | 'blur'
   | 'brightness'
@@ -21,10 +26,11 @@ export type NumericProperty =
   | 'invert'
   | 'hue'
   | 'shadowX'
-  | 'shadowY';
+  | 'shadowY'
+  | 'shadowBlur';
 
 /** Properties whose keyframes hold a colour (hex string). */
-export type ColorProperty = 'fill' | 'shadowColor';
+export type ColorProperty = 'fill' | 'stroke' | 'shadowColor';
 
 export type AnimatableProperty = NumericProperty | ColorProperty;
 

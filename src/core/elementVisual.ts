@@ -13,6 +13,8 @@ export interface NodeBaseline {
   readonly transform: string | null;
   readonly opacity: string | null;
   readonly fill: string | null;
+  readonly stroke: string | null;
+  readonly strokeWidth: string | null;
   readonly filter: string;
 }
 
@@ -26,12 +28,15 @@ export interface ElementVisual {
   readonly transform: string | null;
   readonly opacity: string | null;
   readonly fill: string | null;
+  readonly stroke: string | null;
+  readonly strokeWidth: string | null;
   readonly strokeDasharray: string;
   readonly strokeDashoffset: string;
   readonly filter: string;
 }
 
 const DEFAULT_FILL = '#14b8a6';
+const DEFAULT_SHADOW_COLOR = '#000000';
 
 // A track's value kind is fixed by its property, so these casts are sound.
 function numberTrack(tracks: readonly AnyTrack[], property: string): NumericTrack | undefined {
@@ -55,13 +60,30 @@ function transformAt(
   const xTrack = numberTrack(tracks, 'x');
   const yTrack = numberTrack(tracks, 'y');
   const scaleTrack = numberTrack(tracks, 'scale');
+  const scaleXTrack = numberTrack(tracks, 'scaleX');
+  const scaleYTrack = numberTrack(tracks, 'scaleY');
   const rotationTrack = numberTrack(tracks, 'rotation');
-  if (!xTrack && !yTrack && !scaleTrack && !rotationTrack) return base.transform;
+  const skewXTrack = numberTrack(tracks, 'skewX');
+  const skewYTrack = numberTrack(tracks, 'skewY');
+  const hasTransform =
+    xTrack ||
+    yTrack ||
+    scaleTrack ||
+    scaleXTrack ||
+    scaleYTrack ||
+    rotationTrack ||
+    skewXTrack ||
+    skewYTrack;
+  if (!hasTransform) return base.transform;
   return composeTransform(element.transformOrigin, {
     x: sampleNumber(xTrack, time, 0),
     y: sampleNumber(yTrack, time, 0),
     scale: sampleNumber(scaleTrack, time, 1),
+    scaleX: sampleNumber(scaleXTrack, time, 1),
+    scaleY: sampleNumber(scaleYTrack, time, 1),
     rotation: sampleNumber(rotationTrack, time, 0),
+    skewX: sampleNumber(skewXTrack, time, 0),
+    skewY: sampleNumber(skewYTrack, time, 0),
   });
 }
 
@@ -92,17 +114,31 @@ function filterAt(tracks: readonly AnyTrack[], time: number, base: NodeBaseline)
   }
   const shadowX = numberTrack(tracks, 'shadowX');
   const shadowY = numberTrack(tracks, 'shadowY');
+  const shadowBlur = numberTrack(tracks, 'shadowBlur');
   const shadowColor = colorTrack(tracks, 'shadowColor');
-  if (shadowX !== undefined || shadowY !== undefined || shadowColor !== undefined) {
+  if (
+    shadowX !== undefined ||
+    shadowY !== undefined ||
+    shadowBlur !== undefined ||
+    shadowColor !== undefined
+  ) {
     parts.push(
       dropShadowCss(
         sampleNumber(shadowX, time, numericDefault('shadowX')),
         sampleNumber(shadowY, time, numericDefault('shadowY')),
-        sampleColor(shadowColor, time, '#000000'),
+        sampleNumber(shadowBlur, time, numericDefault('shadowBlur')),
+        sampleColor(shadowColor, time, DEFAULT_SHADOW_COLOR),
       ),
     );
   }
   return parts.length > 0 ? composeFilter(parts) : base.filter;
+}
+
+/** Numeric baseline for stroke width — parses the attribute, or its default. */
+function baseStrokeWidth(base: NodeBaseline): number {
+  if (base.strokeWidth === null) return numericDefault('strokeWidth');
+  const parsed = Number.parseFloat(base.strokeWidth);
+  return Number.isNaN(parsed) ? numericDefault('strokeWidth') : parsed;
 }
 
 /** The element's complete visual state at `time`, computed from its tracks. */
@@ -114,11 +150,17 @@ export function computeElementVisual(
 ): ElementVisual {
   const opacityTrack = numberTrack(tracks, 'opacity');
   const fillTrack = colorTrack(tracks, 'fill');
+  const strokeTrack = colorTrack(tracks, 'stroke');
+  const strokeWidthTrack = numberTrack(tracks, 'strokeWidth');
   const dash = drawAt(element, tracks, time);
   return {
     transform: transformAt(element, tracks, time, base),
     opacity: opacityTrack ? String(sampleNumber(opacityTrack, time, 1)) : base.opacity,
     fill: fillTrack ? sampleColor(fillTrack, time, base.fill ?? DEFAULT_FILL) : base.fill,
+    stroke: strokeTrack ? sampleColor(strokeTrack, time, base.stroke ?? DEFAULT_FILL) : base.stroke,
+    strokeWidth: strokeWidthTrack
+      ? String(sampleNumber(strokeWidthTrack, time, baseStrokeWidth(base)))
+      : base.strokeWidth,
     strokeDasharray: dash.strokeDasharray,
     strokeDashoffset: dash.strokeDashoffset,
     filter: filterAt(tracks, time, base),
@@ -135,6 +177,8 @@ export function applyElementVisual(node: SVGGraphicsElement, visual: ElementVisu
   setAttr(node, 'transform', visual.transform);
   setAttr(node, 'opacity', visual.opacity);
   setAttr(node, 'fill', visual.fill);
+  setAttr(node, 'stroke', visual.stroke);
+  setAttr(node, 'stroke-width', visual.strokeWidth);
   node.style.strokeDasharray = visual.strokeDasharray;
   node.style.strokeDashoffset = visual.strokeDashoffset;
   node.style.filter = visual.filter;

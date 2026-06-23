@@ -25,3 +25,13 @@
 .danger:hover {
   color: var(--danger);
 }
+
+/* Dimmed but still hoverable, so the title tooltip explaining why shows. */
+.disabled {
+  opacity: 0.38;
+  cursor: not-allowed;
+}
+
+.disabled:hover {
+  background: none;
+}

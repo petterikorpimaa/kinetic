@@ -1,0 +1,80 @@
+.group {
+  margin-bottom: 8px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 8px;
+}
+
+.label,
+.subLabel {
+  width: 80px;
+  flex: none;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--dim);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* The expand chevron lives inside the primary field's box (via #suffix), so the
+   value + chevron read as one control. */
+.chevron {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 22px;
+  margin-right: -3px;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--dim2);
+  cursor: pointer;
+}
+
+.chevronIcon {
+  transition:
+    transform 0.15s,
+    color 0.15s;
+}
+
+.chevronOpen {
+  transform: rotate(180deg);
+  color: var(--acc);
+}
+
+/* Reserve the width of the header's keyframe-dot + remove (28 + 24 + two 7px
+   gaps) so each sub-row's field ends exactly where the primary field does. */
+.sub {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 8px;
+  padding-right: 66px;
+}
+
+/* Add-keyframe ◆ — accent fill comes from :active; resting bg stays clear. */
+.key {
+  --btn-square: 28px;
+  --btn-radius: 6px;
+  --btn-fg: var(--dim2);
+}
+
+.diamond {
+  font-size: 8px;
+  line-height: 1;
+}
+
+/* Remove × — a touch taller than wide to line up with the row controls. */
+.remove {
+  --btn-square: 24px;
+  --btn-sq-h: 28px;
+  --btn-radius: 6px;
+  --btn-fs: 15px;
+}

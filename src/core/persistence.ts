@@ -68,6 +68,7 @@ function isSceneElement(value: unknown): value is SceneElement {
     typeof value.id === 'string' &&
     typeof value.domRef === 'string' &&
     SAFE_ID.test(value.domRef) &&
+    (value.parentId === undefined || typeof value.parentId === 'string') &&
     typeof value.tag === 'string' &&
     typeof value.label === 'string' &&
     isRecord(value.transformOrigin) &&

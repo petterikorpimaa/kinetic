@@ -36,9 +36,10 @@ test('animate a property and export it to CSS and GSAP', async ({ page, context 
   await page.getByTestId('export-tab-gsap').click();
   await expect(page.getByTestId('export-code')).toHaveValue(/gsap\.timeline/);
 
-  // The SVG tab shows the tagged, inlined markup.
+  // The SVG tab shows a self-contained animated SVG (tagged markup + embedded keyframes).
   await page.getByTestId('export-tab-svg').click();
   await expect(page.getByTestId('export-code')).toHaveValue(/data-anim-id/);
+  await expect(page.getByTestId('export-code')).toHaveValue(/@keyframes/);
 
   // Copy gives feedback.
   await page.getByTestId('export-copy').click();
@@ -62,6 +63,25 @@ test('renders the animation to a downloadable GIF', async ({ page }) => {
   await page.getByTestId('raster-render').click();
 
   // The encoded GIF previews and is offered for download.
+  await expect(page.getByTestId('raster-preview')).toBeVisible({ timeout: 30_000 });
+  await expect(page.getByTestId('raster-download')).toContainText('.gif');
+});
+
+// SVG-143: fit-content measures the animated bounds (getBBox per frame) and
+// crops to them — browser-only, so validated here.
+test('renders a fit-to-content GIF', async ({ page }) => {
+  await page.goto('/');
+
+  await page.getByTestId('menu-button').click();
+  await page.getByTestId('menu-export').click();
+  await page.getByTestId('export-tab-gif').click();
+  await expect(page.getByTestId('raster-panel')).toBeVisible();
+
+  await page.getByTestId('raster-fps').fill('8');
+  await page.getByTestId('raster-fit').check();
+  await page.getByTestId('raster-render').click();
+
+  // The crop pipeline runs without error and still produces a downloadable GIF.
   await expect(page.getByTestId('raster-preview')).toBeVisible({ timeout: 30_000 });
   await expect(page.getByTestId('raster-download')).toContainText('.gif');
 });

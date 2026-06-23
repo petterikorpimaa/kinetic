@@ -90,4 +90,42 @@ describe('processSvg', () => {
     expect(viewBox).toEqual({ x: 0, y: 0, w: 480, h: 360 });
     expect(elements.map((e) => e.id)).toEqual(['inner', 'middle', 'outer']);
   });
+
+  it('descends into groups, emitting nested shapes with a parent link (SVG-136)', () => {
+    const { elements } = processSvg(
+      '<svg viewBox="0 0 10 10"><g id="grp"><path/><circle/></g></svg>',
+    );
+    // Pre-order: the group, then its children.
+    expect(elements.map((e) => e.tag)).toEqual(['g', 'path', 'circle']);
+    expect(elements[0]!.parentId).toBeUndefined(); // top-level group
+    expect(elements[1]!.parentId).toBe('grp');
+    expect(elements[2]!.parentId).toBe('grp');
+  });
+
+  it('links arbitrarily deep nesting to the nearest container', () => {
+    const { elements } = processSvg(
+      '<svg viewBox="0 0 10 10"><g id="a"><g id="b"><path/></g></g></svg>',
+    );
+    expect(elements.map((e) => e.id)).toEqual(['a', 'b', 'path-2']);
+    expect(elements[1]!.parentId).toBe('a');
+    expect(elements[2]!.parentId).toBe('b');
+  });
+
+  it('labels a group with a readable fallback', () => {
+    const { elements } = processSvg('<svg viewBox="0 0 10 10"><g/></svg>');
+    expect(elements[0]!.label).toBe('Group 1');
+  });
+
+  it('never turns nodes inside <defs>/<clipPath> into layers, and preserves them', () => {
+    const { elements, svgMarkup } = processSvg(
+      `<svg viewBox="0 0 10 10">
+        <defs><clipPath id="c"><rect/></clipPath></defs>
+        <g clip-path="url(#c)"><path/></g>
+      </svg>`,
+    );
+    // The clipPath's <rect> must NOT become a layer; only the group + its path.
+    expect(elements.map((e) => e.tag)).toEqual(['g', 'path']);
+    expect(svgMarkup.toLowerCase()).toContain('clippath');
+    expect(svgMarkup).toContain('clip-path="url(#c)"');
+  });
 });

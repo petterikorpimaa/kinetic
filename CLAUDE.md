@@ -13,6 +13,10 @@ Design & build plan: [docs/svg-animator-plan.md](docs/svg-animator-plan.md) — 
 
 Work is tracked in Linear — team **SVG Animation Editor**, project **SVG Animator (Kinetic) v1** (mirrors [TASKS.md](TASKS.md)).
 
+**Decide whether a request needs its own issue — before starting.** When the user asks for something, first judge its scope. Substantial or multi-step work (a new feature, a cross-cutting change, anything spanning several files, components, or sessions) is worth capturing as a Linear issue first, so everything we do stays tracked end to end. Trivial or quick requests (a one-line fix, a rename, a doc tweak, a question, a small localised change) don't need an issue — just execute them immediately.
+
+When the work looks issue-worthy, **use the built-in question prompt to ask the user whether to create the issue first** — don't assume either way. Create the issue (and move it to **In Progress**) only once they confirm, then execute.
+
 **Linear is the primary home for plans and tasks.** An issue must be self-contained: a developer who has never seen the project should know exactly what to do from the title and description alone.
 
 - **Title** — simple but informative. State the outcome, not the mechanics.

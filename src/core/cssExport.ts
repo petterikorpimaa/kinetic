@@ -27,11 +27,21 @@ import { round3 as num } from './format';
  */
 
 const TIME_EPSILON = 1e-4;
-const TRANSFORM_PROPS: ReadonlySet<string> = new Set(['x', 'y', 'scale', 'rotation']);
+const TRANSFORM_PROPS: ReadonlySet<string> = new Set([
+  'x',
+  'y',
+  'scale',
+  'scaleX',
+  'scaleY',
+  'rotation',
+  'skewX',
+  'skewY',
+]);
 const FILTER_PROPS: ReadonlySet<string> = new Set([
   ...SCALAR_FILTERS,
   'shadowX',
   'shadowY',
+  'shadowBlur',
   'shadowColor',
 ]);
 
@@ -81,13 +91,23 @@ function transformValue(tracks: readonly AnyTrack[], time: number): string {
   const x = numberTrack(tracks, 'x');
   const y = numberTrack(tracks, 'y');
   const scale = numberTrack(tracks, 'scale');
+  const scaleX = numberTrack(tracks, 'scaleX');
+  const scaleY = numberTrack(tracks, 'scaleY');
   const rotation = numberTrack(tracks, 'rotation');
+  const skewX = numberTrack(tracks, 'skewX');
+  const skewY = numberTrack(tracks, 'skewY');
   const parts: string[] = [];
   if (x !== undefined || y !== undefined) {
     parts.push(`translate(${num(sampleNumber(x, time, 0))}px, ${num(sampleNumber(y, time, 0))}px)`);
   }
   if (rotation !== undefined) parts.push(`rotate(${num(sampleNumber(rotation, time, 0))}deg)`);
-  if (scale !== undefined) parts.push(`scale(${num(sampleNumber(scale, time, 1))})`);
+  if (scale !== undefined || scaleX !== undefined || scaleY !== undefined) {
+    const sx = sampleNumber(scale, time, 1) * sampleNumber(scaleX, time, 1);
+    const sy = sampleNumber(scale, time, 1) * sampleNumber(scaleY, time, 1);
+    parts.push(sx === sy ? `scale(${num(sx)})` : `scale(${num(sx)}, ${num(sy)})`);
+  }
+  if (skewX !== undefined) parts.push(`skewX(${num(sampleNumber(skewX, time, 0))}deg)`);
+  if (skewY !== undefined) parts.push(`skewY(${num(sampleNumber(skewY, time, 0))}deg)`);
   return parts.join(' ');
 }
 
@@ -102,12 +122,19 @@ export function filterValue(tracks: readonly AnyTrack[], time: number): string {
   }
   const shadowX = numberTrack(tracks, 'shadowX');
   const shadowY = numberTrack(tracks, 'shadowY');
+  const shadowBlur = numberTrack(tracks, 'shadowBlur');
   const shadowColor = colorTrack(tracks, 'shadowColor');
-  if (shadowX !== undefined || shadowY !== undefined || shadowColor !== undefined) {
+  if (
+    shadowX !== undefined ||
+    shadowY !== undefined ||
+    shadowBlur !== undefined ||
+    shadowColor !== undefined
+  ) {
     parts.push(
       dropShadowCss(
         sampleNumber(shadowX, time, numericDefault('shadowX')),
         sampleNumber(shadowY, time, numericDefault('shadowY')),
+        sampleNumber(shadowBlur, time, numericDefault('shadowBlur')),
         sampleColor(shadowColor, time, '#000000'),
       ),
     );
@@ -287,6 +314,36 @@ function exportElement(
         'fill',
         [fill],
         (t) => sampleColor(fill, t, '#000000'),
+        duration,
+        fps,
+      ),
+    );
+  }
+
+  const stroke = colorTrack(tracks, 'stroke');
+  if (stroke !== undefined) {
+    collect(
+      buildChannel(
+        element.domRef,
+        'stroke',
+        'stroke',
+        [stroke],
+        (t) => sampleColor(stroke, t, '#000000'),
+        duration,
+        fps,
+      ),
+    );
+  }
+
+  const strokeWidth = numberTrack(tracks, 'strokeWidth');
+  if (strokeWidth !== undefined) {
+    collect(
+      buildChannel(
+        element.domRef,
+        'strokeWidth',
+        'stroke-width',
+        [strokeWidth],
+        (t) => num(sampleNumber(strokeWidth, t, 1)),
         duration,
         fps,
       ),

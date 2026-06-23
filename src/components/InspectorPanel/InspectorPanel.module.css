@@ -84,50 +84,6 @@
   margin: 0 0 10px;
 }
 
-.shadow {
-  margin-bottom: 8px;
-  border: 1px solid var(--line);
-  border-radius: 9px;
-  padding: 6px 8px 2px;
-}
-
-.shadowHead {
-  display: flex;
-  align-items: center;
-  margin-bottom: 6px;
-}
-
-.shadowToggle {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  flex: 1;
-  padding: 2px;
-  border: none;
-  background: none;
-  color: var(--dim);
-  font-family: inherit;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  cursor: pointer;
-}
-
-.shadowChev {
-  transition: transform 0.15s;
-}
-
-.open {
-  transform: rotate(180deg);
-}
-
-.shadowRemove {
-  --btn-square: 22px;
-  --btn-radius: 6px;
-  --btn-fs: 14px;
-}
-
 .addWrap {
   position: relative;
   margin-top: 4px;

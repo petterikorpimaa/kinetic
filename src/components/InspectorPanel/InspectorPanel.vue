@@ -1,10 +1,16 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue';
-import { ChevronRight, ChevronDown, MousePointer2, Plus } from '@lucide/vue';
+import { ChevronRight, MousePointer2, Plus } from '@lucide/vue';
 import { useDocumentStore } from '@/stores/document';
 import { usePlaybackStore } from '@/stores/playback';
-import { PROPERTY_DEFS, DROP_SHADOW_MEMBERS, DROP_SHADOW_LABEL } from '@/core/properties';
+import {
+  PROPERTY_DEFS,
+  DROP_SHADOW_MEMBERS,
+  DROP_SHADOW_LABEL,
+  DROP_SHADOW_SUB_LABELS,
+} from '@/core/properties';
 import PropertyRow from '../PropertyRow/PropertyRow.vue';
+import ParameterGroupRow from '../ParameterGroupRow/ParameterGroupRow.vue';
 import AddPropertyMenu from '../AddPropertyMenu/AddPropertyMenu.vue';
 import EasingEditor from '../EasingEditor/EasingEditor.vue';
 import Button from '@/atoms/Button/Button.vue';
@@ -38,20 +44,21 @@ const activeRows = computed(() => {
 const activeKeys = computed(() => activeRows.value.map((row) => row.def.key));
 const activeCount = computed(() => activeRows.value.length);
 
-// Drop-shadow's tracks (X/Y/colour) are grouped under one expandable row (SVG-59).
+// Drop-shadow's tracks (offset X/Y, blur, colour) are grouped under one
+// expandable multi-parameter row (SVG-59, SVG-145).
 const SHADOW_MEMBERS: readonly string[] = DROP_SHADOW_MEMBERS;
 const normalRows = computed(() =>
   activeRows.value.filter((row) => !SHADOW_MEMBERS.includes(row.def.key)),
 );
-const shadowRows = computed(() =>
-  activeRows.value.filter((row) => SHADOW_MEMBERS.includes(row.def.key)),
+const shadowMembers = computed(() =>
+  activeRows.value
+    .filter((row) => SHADOW_MEMBERS.includes(row.def.key))
+    .map((row) => ({
+      def: row.def,
+      track: row.track,
+      label: DROP_SHADOW_SUB_LABELS[row.def.key] ?? row.def.label,
+    })),
 );
-const shadowOpen = ref(true);
-
-function removeDropShadow(): void {
-  if (selected.value === undefined) return;
-  for (const row of shadowRows.value) store.removeProperty(selected.value.id, row.def.key);
-}
 
 const addOpen = ref(false);
 watch(selectedId, () => {
@@ -100,51 +107,21 @@ watch(selectedId, () => {
           :time="playback.currentTime"
         />
 
-        <div v-if="shadowRows.length > 0" :class="styles.shadow" data-testid="dropshadow-group">
-          <div :class="styles.shadowHead">
-            <button type="button" :class="styles.shadowToggle" @click="shadowOpen = !shadowOpen">
-              <ChevronDown
-                :size="12"
-                :stroke-width="1.7"
-                :class="[styles.shadowChev, shadowOpen ? styles.open : '']"
-              />
-              {{ DROP_SHADOW_LABEL }}
-            </button>
-            <Button
-              variant="icon"
-              plain
-              danger
-              :class="styles.shadowRemove"
-              data-testid="dropshadow-remove"
-              title="Remove drop shadow"
-              @click="removeDropShadow"
-            >
-              ×
-            </Button>
-          </div>
-          <PropertyRow
-            v-for="row in shadowRows"
-            v-show="shadowOpen"
-            :key="row.def.key"
-            :element-id="selected.id"
-            :def="row.def"
-            :track="row.track"
-            :time="playback.currentTime"
-          />
-        </div>
+        <ParameterGroupRow
+          v-if="shadowMembers.length > 0"
+          :element-id="selected.id"
+          :label="DROP_SHADOW_LABEL"
+          testid-base="dropshadow"
+          :members="shadowMembers"
+          :time="playback.currentTime"
+        />
 
         <EmptyState v-if="activeCount === 0" bordered :class="styles.note">
           No animated properties yet — add one to start keyframing.
         </EmptyState>
 
         <div :class="styles.addWrap">
-          <Button
-            variant="dashed"
-            block
-            :class="styles.add"
-            data-testid="add-property"
-            @click="addOpen = !addOpen"
-          >
+          <Button block :class="styles.add" data-testid="add-property" @click="addOpen = !addOpen">
             <Plus :size="15" :stroke-width="1.8" />
             Add property
           </Button>

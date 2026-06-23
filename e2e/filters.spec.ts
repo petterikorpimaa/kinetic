@@ -27,8 +27,8 @@ test('adding drop-shadow creates one expandable group and applies a shadow', asy
   await page.getByTestId('add-prop-dropShadow').click();
 
   await expect(page.getByTestId('dropshadow-group')).toBeVisible();
-  await expect(page.getByTestId('prop-row-shadowX')).toBeVisible();
-  await expect(page.getByTestId('prop-row-shadowColor')).toBeVisible();
+  await expect(page.getByTestId('param-sub-shadowX')).toBeVisible();
+  await expect(page.getByTestId('param-sub-shadowColor')).toBeVisible();
 
   const shape = page.getByTestId('canvas-stage').locator('[data-anim-id="shape"]');
   await expect(shape).toHaveAttribute('style', /filter:.*drop-shadow\(/);

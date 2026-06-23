@@ -59,8 +59,44 @@ export const PROPERTY_DEFS: readonly PropertyDef[] = [
     unit: '',
   },
   {
+    key: 'scaleX',
+    label: 'Scale X',
+    kind: 'number',
+    group: 'Transform',
+    defaultValue: 1,
+    decimals: 2,
+    unit: '',
+  },
+  {
+    key: 'scaleY',
+    label: 'Scale Y',
+    kind: 'number',
+    group: 'Transform',
+    defaultValue: 1,
+    decimals: 2,
+    unit: '',
+  },
+  {
     key: 'rotation',
     label: 'Rotation',
+    kind: 'number',
+    group: 'Transform',
+    defaultValue: 0,
+    decimals: 0,
+    unit: '°',
+  },
+  {
+    key: 'skewX',
+    label: 'Skew X',
+    kind: 'number',
+    group: 'Transform',
+    defaultValue: 0,
+    decimals: 0,
+    unit: '°',
+  },
+  {
+    key: 'skewY',
+    label: 'Skew Y',
     kind: 'number',
     group: 'Transform',
     defaultValue: 0,
@@ -77,6 +113,16 @@ export const PROPERTY_DEFS: readonly PropertyDef[] = [
     unit: '',
   },
   { key: 'fill', label: 'Fill', kind: 'color', group: 'Appearance', defaultValue: '#14b8a6' },
+  { key: 'stroke', label: 'Stroke', kind: 'color', group: 'Appearance', defaultValue: '#14b8a6' },
+  {
+    key: 'strokeWidth',
+    label: 'Stroke Width',
+    kind: 'number',
+    group: 'Appearance',
+    defaultValue: 1,
+    decimals: 1,
+    unit: 'px',
+  },
   {
     key: 'draw',
     label: 'Stroke Draw',
@@ -177,6 +223,15 @@ export const PROPERTY_DEFS: readonly PropertyDef[] = [
     unit: 'px',
   },
   {
+    key: 'shadowBlur',
+    label: 'Shadow Blur',
+    kind: 'number',
+    group: 'Filters',
+    defaultValue: 4,
+    decimals: 0,
+    unit: 'px',
+  },
+  {
     key: 'shadowColor',
     label: 'Shadow Color',
     kind: 'color',
@@ -188,11 +243,20 @@ export const PROPERTY_DEFS: readonly PropertyDef[] = [
 export const PROPERTY_GROUPS: readonly PropertyGroup[] = ['Transform', 'Appearance', 'Filters'];
 
 /**
- * Drop-shadow is three animatable tracks (offset X/Y + colour) presented as one
- * expandable "Drop Shadow" entry in the menu and Inspector (SVG-59).
+ * Drop-shadow is four animatable tracks (offset X/Y, blur, colour) presented as
+ * one expandable "Drop Shadow" entry in the menu and Inspector (SVG-59). The
+ * first member is the primary value surfaced inline on the group's header row.
  */
-export const DROP_SHADOW_MEMBERS = ['shadowX', 'shadowY', 'shadowColor'] as const;
+export const DROP_SHADOW_MEMBERS = ['shadowX', 'shadowY', 'shadowBlur', 'shadowColor'] as const;
 export const DROP_SHADOW_LABEL = 'Drop Shadow';
+
+/** Short labels for the drop-shadow sub-rows (the group already names the effect). */
+export const DROP_SHADOW_SUB_LABELS: Readonly<Record<string, string>> = {
+  shadowX: 'Offset X',
+  shadowY: 'Offset Y',
+  shadowBlur: 'Blur',
+  shadowColor: 'Color',
+};
 
 const DEF_BY_KEY = new Map<AnimatableProperty, PropertyDef>(
   PROPERTY_DEFS.map((def) => [def.key, def]),

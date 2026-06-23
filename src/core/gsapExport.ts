@@ -34,9 +34,22 @@ const TRANSFORM_GSAP: Record<string, string> = {
   x: 'x',
   y: 'y',
   scale: 'scale',
+  scaleX: 'scaleX',
+  scaleY: 'scaleY',
   rotation: 'rotation',
+  skewX: 'skewX',
+  skewY: 'skewY',
 };
-const TRANSFORM_ORDER = ['x', 'y', 'scale', 'rotation'] as const;
+const TRANSFORM_ORDER = [
+  'x',
+  'y',
+  'scale',
+  'scaleX',
+  'scaleY',
+  'rotation',
+  'skewX',
+  'skewY',
+] as const;
 const FILTER_PROPS: ReadonlySet<string> = new Set([
   'blur',
   'brightness',
@@ -48,6 +61,7 @@ const FILTER_PROPS: ReadonlySet<string> = new Set([
   'hue',
   'shadowX',
   'shadowY',
+  'shadowBlur',
   'shadowColor',
 ]);
 
@@ -143,6 +157,13 @@ function emitElement(
   const fill = colorTrack(tracks, 'fill');
   if (fill !== undefined) initial.push(`fill: '${fill.keyframes[0]!.value}'`);
 
+  const stroke = colorTrack(tracks, 'stroke');
+  if (stroke !== undefined) initial.push(`stroke: '${stroke.keyframes[0]!.value}'`);
+
+  const strokeWidth = numberTrack(tracks, 'strokeWidth');
+  if (strokeWidth !== undefined)
+    initial.push(`strokeWidth: ${num(strokeWidth.keyframes[0]!.value)}`);
+
   const draw = numberTrack(tracks, 'draw');
   const length = element.pathLength || 0;
   if (draw !== undefined) {
@@ -164,6 +185,9 @@ function emitElement(
     emitTrack(state, TRANSFORM_GSAP[track.property]!, track, (v) => num(v as number));
   if (opacity !== undefined) emitTrack(state, 'opacity', opacity, (v) => num(v as number));
   if (fill !== undefined) emitTrack(state, 'fill', fill, (v) => `'${v}'`);
+  if (stroke !== undefined) emitTrack(state, 'stroke', stroke, (v) => `'${v}'`);
+  if (strokeWidth !== undefined)
+    emitTrack(state, 'strokeWidth', strokeWidth, (v) => num(v as number));
   if (draw !== undefined)
     emitTrack(state, 'strokeDashoffset', draw, (v) => num(strokeDashOffset(length, v as number)));
 

@@ -1,7 +1,7 @@
 import type { SceneElement } from '../types/element';
 import type { ViewBox } from '../types/document';
 
-/** Top-level SVG tags that become animatable layers. */
+/** SVG tags that become animatable layers, at any depth. */
 const ANIMATABLE_TAGS = [
   'circle',
   'rect',
@@ -14,6 +14,12 @@ const ANIMATABLE_TAGS = [
   'text',
   'image',
 ] as const;
+
+/** Container tags we descend into to surface their children as layers. */
+const CONTAINER_TAGS = new Set<string>(['g']);
+
+/** Friendly fallback label per tag where the title-cased tag reads poorly. */
+const LABEL_BY_TAG: Readonly<Record<string, string>> = { g: 'Group' };
 
 const DEFAULT_VIEWBOX: ViewBox = { x: 0, y: 0, w: 480, h: 360 };
 
@@ -37,6 +43,10 @@ function parseViewBox(raw: string | null): ViewBox {
 
 function titleCase(tag: string): string {
   return tag.charAt(0).toUpperCase() + tag.slice(1);
+}
+
+function labelFor(tag: string): string {
+  return LABEL_BY_TAG[tag] ?? titleCase(tag);
 }
 
 /**
@@ -68,9 +78,11 @@ function sanitize(svg: SVGSVGElement): void {
 }
 
 /**
- * Parse imported SVG markup into the editable model. Walks the top-level
- * children, keeps the animatable tags, assigns each a stable `data-anim-id`,
- * and derives a friendly label and `baseTransform`.
+ * Parse imported SVG markup into the editable model. Descends the tree depth
+ * first, keeps the animatable tags at any depth, assigns each a stable
+ * `data-anim-id`, and derives a friendly label, `baseTransform` and parent link.
+ * Structural nodes (`<defs>`, `<clipPath>`, `<use>`, …) are left untouched so
+ * clip-paths and references keep rendering; we never descend into them.
  *
  * Pure and framework-free — uses the platform `DOMParser` (provided by jsdom
  * in tests). Throws on input that is not a valid SVG (validate at boundaries).
@@ -92,28 +104,37 @@ export function processSvg(raw: string): ProcessedSvg {
   const usedIds = new Set<string>();
   let index = 0;
 
-  for (const child of Array.from(svg.children)) {
-    const tag = child.tagName.toLowerCase();
-    if (!whitelist.has(tag)) continue;
+  // Pre-order walk: a parent is emitted right before its descendants, so the
+  // flat array doubles as the layer-tree order. Only descends into containers.
+  function walk(parent: Element, parentId: string | undefined): void {
+    for (const child of Array.from(parent.children)) {
+      const tag = child.tagName.toLowerCase();
+      if (!whitelist.has(tag)) continue; // structural / unknown — keep in markup, don't descend
 
-    const existingId = child.getAttribute('data-anim-id') ?? child.getAttribute('id');
-    const animId = canonicalAnimId(existingId, `${tag}-${index}`, usedIds);
-    child.setAttribute('data-anim-id', animId);
-    child.setAttribute('id', animId);
+      const existingId = child.getAttribute('data-anim-id') ?? child.getAttribute('id');
+      const animId = canonicalAnimId(existingId, `${tag}-${index}`, usedIds);
+      child.setAttribute('data-anim-id', animId);
+      child.setAttribute('id', animId);
 
-    const label = child.getAttribute('data-name') ?? `${titleCase(tag)} ${index + 1}`;
+      const label = child.getAttribute('data-name') ?? `${labelFor(tag)} ${index + 1}`;
 
-    elements.push({
-      id: animId,
-      domRef: animId,
-      tag,
-      label,
-      transformOrigin: { x: 0, y: 0 },
-      baseTransform: child.getAttribute('transform') ?? '',
-      pathLength: 0,
-    });
-    index += 1;
+      elements.push({
+        id: animId,
+        domRef: animId,
+        tag,
+        label,
+        transformOrigin: { x: 0, y: 0 },
+        baseTransform: child.getAttribute('transform') ?? '',
+        pathLength: 0,
+        ...(parentId !== undefined ? { parentId } : {}),
+      });
+      index += 1;
+
+      if (CONTAINER_TAGS.has(tag)) walk(child, animId);
+    }
   }
+
+  walk(svg, undefined);
 
   return {
     svgMarkup: svg.outerHTML,

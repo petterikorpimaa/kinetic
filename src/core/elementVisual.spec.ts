@@ -19,7 +19,26 @@ function element(overrides: Partial<SceneElement> = {}): SceneElement {
   };
 }
 
-const EMPTY_BASE: NodeBaseline = { transform: null, opacity: null, fill: null, filter: '' };
+const EMPTY_BASE: NodeBaseline = {
+  transform: null,
+  opacity: null,
+  fill: null,
+  stroke: null,
+  strokeWidth: null,
+  filter: '',
+};
+
+function colourTrack(property: ColorTrack['property'], from: string, to: string): ColorTrack {
+  return {
+    id: `t-${property}`,
+    elementId: 'e1',
+    property,
+    keyframes: [
+      { id: 'a', time: 0, value: from, easing: LINEAR },
+      { id: 'b', time: 2, value: to, easing: LINEAR },
+    ],
+  };
+}
 
 function numberTrack(property: NumericTrack['property'], from: number, to: number): NumericTrack {
   return {
@@ -47,6 +66,15 @@ describe('computeElementVisual — transform', () => {
     const base: NodeBaseline = { ...EMPTY_BASE, transform: 'translate(5 5)' };
     const visual = computeElementVisual(element(), [], 1, base);
     expect(visual.transform).toBe('translate(5 5)');
+  });
+
+  it('combines per-axis scale (with uniform scale) and skew about the origin', () => {
+    const tracks: AnyTrack[] = [numberTrack('scaleX', 2, 2), numberTrack('skewX', 0, 30)];
+    const visual = computeElementVisual(element(), tracks, 1, EMPTY_BASE);
+    // scaleX=2, scaleY default 1 → scale(2 1); skewX interpolates to 15 at t=1.
+    expect(visual.transform).toBe(
+      'translate(0 0) rotate(0 10 20) translate(10 20) scale(2 1) skewX(15) translate(-10 -20)',
+    );
   });
 });
 
@@ -77,6 +105,25 @@ describe('computeElementVisual — opacity & fill', () => {
   });
 });
 
+describe('computeElementVisual — stroke', () => {
+  it('samples stroke colour and width from their tracks', () => {
+    const tracks: AnyTrack[] = [
+      colourTrack('stroke', '#000000', '#ffffff'),
+      numberTrack('strokeWidth', 1, 5),
+    ];
+    const visual = computeElementVisual(element(), tracks, 1, EMPTY_BASE);
+    expect(visual.stroke).toBe('#808080');
+    expect(visual.strokeWidth).toBe('3');
+  });
+
+  it('uses the baseline stroke and width when no track exists', () => {
+    const base: NodeBaseline = { ...EMPTY_BASE, stroke: '#abcdef', strokeWidth: '7' };
+    const visual = computeElementVisual(element(), [], 1, base);
+    expect(visual.stroke).toBe('#abcdef');
+    expect(visual.strokeWidth).toBe('7');
+  });
+});
+
 describe('computeElementVisual — draw', () => {
   it('writes dasharray/offset from the path length and draw percent', () => {
     const visual = computeElementVisual(
@@ -101,8 +148,8 @@ describe('computeElementVisual — filters', () => {
   it('composes scalar filters and drop-shadow in canonical order', () => {
     const tracks: AnyTrack[] = [numberTrack('blur', 0, 4), numberTrack('shadowX', 0, 6)];
     const visual = computeElementVisual(element(), tracks, 2, EMPTY_BASE);
-    // shadowY has no track, so it uses its property default (4).
-    expect(visual.filter).toBe('blur(4px) drop-shadow(6px 4px #000000)');
+    // shadowY and shadowBlur have no track, so they use their property defaults (4).
+    expect(visual.filter).toBe('blur(4px) drop-shadow(6px 4px 4px #000000)');
   });
 
   it('uses the baseline filter when no filter track exists', () => {
@@ -119,6 +166,8 @@ describe('applyElementVisual', () => {
       transform: 'translate(1 2)',
       opacity: '0.5',
       fill: '#abcdef',
+      stroke: '#123456',
+      strokeWidth: '3',
       strokeDasharray: '100',
       strokeDashoffset: '25',
       filter: 'blur(1px)',
@@ -126,6 +175,8 @@ describe('applyElementVisual', () => {
     expect(node.getAttribute('transform')).toBe('translate(1 2)');
     expect(node.getAttribute('opacity')).toBe('0.5');
     expect(node.getAttribute('fill')).toBe('#abcdef');
+    expect(node.getAttribute('stroke')).toBe('#123456');
+    expect(node.getAttribute('stroke-width')).toBe('3');
     expect(node.style.strokeDasharray).toBe('100');
     expect(node.style.strokeDashoffset).toBe('25');
     expect(node.style.filter).toBe('blur(1px)');
@@ -135,15 +186,19 @@ describe('applyElementVisual', () => {
     const node = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
     node.setAttribute('transform', 'translate(9 9)');
     node.setAttribute('opacity', '0.2');
+    node.setAttribute('stroke', '#000000');
     applyElementVisual(node, {
       transform: null,
       opacity: null,
       fill: null,
+      stroke: null,
+      strokeWidth: null,
       strokeDasharray: '',
       strokeDashoffset: '',
       filter: '',
     });
     expect(node.hasAttribute('transform')).toBe(false);
     expect(node.hasAttribute('opacity')).toBe(false);
+    expect(node.hasAttribute('stroke')).toBe(false);
   });
 });
