@@ -36,7 +36,11 @@ jobs:
       - name: Build
         run: pnpm build
 
+      # enablement: true provisions the Pages site on first run, so no manual
+      # "Settings -> Pages -> Source: GitHub Actions" toggle is required.
       - uses: actions/configure-pages@v5
+        with:
+          enablement: true
 
       - uses: actions/upload-pages-artifact@v3
         with:
