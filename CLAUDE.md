@@ -13,6 +13,12 @@ Design & build plan: [docs/svg-animator-plan.md](docs/svg-animator-plan.md) — 
 
 Work is tracked in Linear — team **SVG Animation Editor**, project **SVG Animator (Kinetic) v1** (mirrors [TASKS.md](TASKS.md)).
 
+**Linear is the primary home for plans and tasks.** An issue must be self-contained: a developer who has never seen the project should know exactly what to do from the title and description alone.
+
+- **Title** — simple but informative. State the outcome, not the mechanics.
+- **Description** — everything needed to do the work: the goal, the expected behaviour, and how to tell it's done. Keep it tight; informative beats exhaustive.
+- **No project file or folder references.** Don't point at paths, modules, or docs in the repo — describe the work in plain terms so the issue stays valid as the code moves. Linking **other Linear issues** is fine and encouraged for dependencies and context.
+
 **Keep issue status in sync with reality — in real time, as you work.** Move each Linear issue through the workflow _at the moment the work happens_, one issue at a time:
 
 - **Start** an issue → set it to **In Progress** _before_ you touch its code, not after.
