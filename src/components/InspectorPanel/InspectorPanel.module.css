@@ -23,6 +23,11 @@
   min-width: 0;
 }
 
+/* Match the collapsed rail's 26px box so the affordance is the same size in both states. */
+.collapse {
+  --btn-square: 26px;
+}
+
 .eyebrow {
   display: block;
   margin-bottom: 5px;

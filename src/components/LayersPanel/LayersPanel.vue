@@ -64,7 +64,13 @@ function hasKeyframes(id: string): boolean {
           <span :title="fileName" :class="styles.fileLabel">{{ fileName }}</span>
         </div>
       </div>
-      <Button variant="icon" size="sm" title="Collapse panel" @click="$emit('collapse')">
+      <Button
+        variant="icon"
+        size="sm"
+        :class="styles.collapse"
+        title="Collapse panel"
+        @click="$emit('collapse')"
+      >
         <ChevronLeft :size="13" :stroke-width="1.4" />
       </Button>
     </div>

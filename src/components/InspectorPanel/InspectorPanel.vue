@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue';
-import { ChevronLeft, ChevronDown, MousePointer2, Plus } from '@lucide/vue';
+import { ChevronRight, ChevronDown, MousePointer2, Plus } from '@lucide/vue';
 import { useDocumentStore } from '@/stores/document';
 import { usePlaybackStore } from '@/stores/playback';
 import { PROPERTY_DEFS, DROP_SHADOW_MEMBERS, DROP_SHADOW_LABEL } from '@/core/properties';
@@ -73,8 +73,14 @@ watch(selectedId, () => {
           Editing locked — multiple keyframes selected
         </div>
       </div>
-      <Button variant="icon" size="sm" title="Collapse panel" @click="$emit('collapse')">
-        <ChevronLeft :size="13" :stroke-width="1.4" />
+      <Button
+        variant="icon"
+        size="sm"
+        :class="styles.collapse"
+        title="Collapse panel"
+        @click="$emit('collapse')"
+      >
+        <ChevronRight :size="13" :stroke-width="1.4" />
       </Button>
     </div>
 

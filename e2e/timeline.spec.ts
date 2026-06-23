@@ -23,6 +23,25 @@ test('scrubbing the ruler moves the playhead time', async ({ page }) => {
   await expect(page.getByTestId('inspector-time')).not.toHaveText('0.00s');
 });
 
+test('scrubbing the ruler never selects page text', async ({ page }) => {
+  await page.goto('/');
+
+  const ruler = page.getByTestId('timeline-ruler');
+  const box = await ruler.boundingBox();
+  if (box === null) throw new Error('ruler has no bounding box');
+
+  // Drag from the ruler up and across the panels — this used to sweep a text
+  // selection across labels/readouts (SVG-135).
+  await page.mouse.move(box.x + box.width / 2, box.y + 8);
+  await page.mouse.down();
+  await page.mouse.move(box.x + box.width / 4, box.y - 140, { steps: 8 });
+  await page.mouse.move(60, 130, { steps: 8 });
+  await page.mouse.up();
+
+  const selected = await page.evaluate(() => window.getSelection()?.toString() ?? '');
+  expect(selected).toBe('');
+});
+
 test('play advances the playhead and pause holds it', async ({ page }) => {
   await page.goto('/');
   await addPositionX(page);

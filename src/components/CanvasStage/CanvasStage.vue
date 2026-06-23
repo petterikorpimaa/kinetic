@@ -18,6 +18,7 @@ import {
   type NodeBaseline,
   type ElementVisual,
 } from '@/core/elementVisual';
+import { isLightColor } from '@/core/color';
 import Button from '@/atoms/Button/Button.vue';
 import ColorField from '@/atoms/ColorField/ColorField.vue';
 import Popover from '@/atoms/Popover/Popover.vue';
@@ -104,14 +105,17 @@ function startPan(event: PointerEvent): void {
 const stageStyle = computed(() => {
   const color = bgColor.value;
   if (bgPattern.value === 'Plain') return { background: color };
+  // Tint the pattern opposite the background's luminance so it stays visible:
+  // dark grid/dots over a light background, light over a dark one.
+  const tint = isLightColor(color) ? '#000000' : '#ffffff';
   if (bgPattern.value === 'Dots') {
     return {
-      background: `radial-gradient(circle at 1px 1px, #ffffff1f 1px, transparent 0) 0 0 / 22px 22px, ${color}`,
+      background: `radial-gradient(circle at 1px 1px, ${tint}1f 1px, transparent 0) 0 0 / 22px 22px, ${color}`,
     };
   }
   return {
-    background: `linear-gradient(#ffffff12 1px, transparent 1px) 0 0 / 22px 22px,
-      linear-gradient(90deg, #ffffff12 1px, transparent 1px) 0 0 / 22px 22px, ${color}`,
+    background: `linear-gradient(${tint}12 1px, transparent 1px) 0 0 / 22px 22px,
+      linear-gradient(90deg, ${tint}12 1px, transparent 1px) 0 0 / 22px 22px, ${color}`,
   };
 });
 

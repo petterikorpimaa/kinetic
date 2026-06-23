@@ -48,3 +48,14 @@ export function normalizeHex(raw: string): string | null {
   if (!HEX_PATTERN.test(value)) return null;
   return value.toLowerCase();
 }
+
+/** Perceived luminance (0–1) of a hex colour via the Rec. 601 luma weights. */
+export function luminance(hex: string): number {
+  const [r, g, b] = hexToRgb(hex);
+  return (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+}
+
+/** True when a colour is light enough that dark content reads better over it. */
+export function isLightColor(hex: string): boolean {
+  return luminance(hex) > 0.5;
+}

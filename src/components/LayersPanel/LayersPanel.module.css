@@ -25,6 +25,11 @@
   gap: 4px;
 }
 
+/* Match the collapsed rail's 26px box so the affordance is the same size in both states. */
+.collapse {
+  --btn-square: 26px;
+}
+
 .titleRow {
   display: flex;
   align-items: center;

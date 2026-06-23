@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { hexToRgb, mixHexColor, normalizeHex } from './color';
+import { hexToRgb, mixHexColor, normalizeHex, luminance, isLightColor } from './color';
 
 describe('hexToRgb', () => {
   it('parses 6-digit hex', () => {
@@ -46,5 +46,26 @@ describe('normalizeHex', () => {
     expect(normalizeHex('')).toBeNull();
     expect(normalizeHex('#12')).toBeNull();
     expect(normalizeHex('xyz')).toBeNull();
+  });
+});
+
+describe('luminance', () => {
+  it('is 0 for black and 1 for white', () => {
+    expect(luminance('#000000')).toBe(0);
+    expect(luminance('#ffffff')).toBe(1);
+  });
+
+  it('weights green more than red and blue', () => {
+    expect(luminance('#00ff00')).toBeGreaterThan(luminance('#ff0000'));
+    expect(luminance('#ff0000')).toBeGreaterThan(luminance('#0000ff'));
+  });
+});
+
+describe('isLightColor', () => {
+  it('treats near-white as light and the dark editor background as dark', () => {
+    expect(isLightColor('#ffffff')).toBe(true);
+    expect(isLightColor('#eeeeee')).toBe(true);
+    expect(isLightColor('#0d0d14')).toBe(false);
+    expect(isLightColor('#000000')).toBe(false);
   });
 });
