@@ -21,8 +21,8 @@ test('selecting a layer updates the inspector', async ({ page }) => {
 
 test('clicking a shape on the canvas selects it', async ({ page }) => {
   await page.goto('/');
-  await page.getByTestId('canvas-stage').locator('[data-anim-id="spark"]').click();
-  await expect(page.getByTestId('inspector-panel')).toContainText('Spark');
+  await page.getByTestId('canvas-stage').locator('[data-anim-id="play"]').click();
+  await expect(page.getByTestId('inspector-panel')).toContainText('Play');
 });
 
 test('import dialog opens from the menu and loads the sample', async ({ page }) => {

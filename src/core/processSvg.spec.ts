@@ -85,9 +85,9 @@ describe('processSvg', () => {
     expect(() => processSvg('<div>not svg</div>')).toThrow(/no <svg>/);
   });
 
-  it('processes the built-in sample into five layers', () => {
+  it('processes the built-in sample into four layers', () => {
     const { elements, viewBox } = processSvg(SAMPLE_SVG);
     expect(viewBox).toEqual({ x: 0, y: 0, w: 480, h: 360 });
-    expect(elements.map((e) => e.id)).toEqual(['plate', 'ring', 'orb', 'play', 'spark']);
+    expect(elements.map((e) => e.id)).toEqual(['plate', 'ring', 'orb', 'play']);
   });
 });

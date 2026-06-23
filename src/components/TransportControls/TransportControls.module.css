@@ -16,6 +16,11 @@
   --btn-bd-hover: var(--dim2);
 }
 
+/* Loop, when on (the only toggle here, so aria-pressed marks it): white hover border. */
+.btn[aria-pressed='true'] {
+  --btn-bd-hover: #fff;
+}
+
 /* play: the prominent filled control. */
 .play {
   --btn-square: 38px;
