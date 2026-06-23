@@ -313,12 +313,13 @@ describe('useDocumentStore', () => {
     const store = useDocumentStore();
     store.loadSample();
     expect(store.document.elements.map((element) => element.id)).toEqual([
-      'plate',
-      'ring',
-      'orb',
-      'play',
+      'inner',
+      'middle',
+      'outer',
     ]);
-    expect(store.document.tracks).toHaveLength(3);
+    expect(store.document.tracks).toHaveLength(15);
+    // The seeded loop runs over its own (2s) duration, not the 3s default.
+    expect(store.document.duration).toBe(2);
     // The selected element must own a track so the timeline shows keyframes.
     const selected = store.document.selectedElementId;
     expect(selected).not.toBeNull();
@@ -334,7 +335,7 @@ describe('useDocumentStore', () => {
   it('a user import does not carry over the example animation', () => {
     const store = useDocumentStore();
     store.loadSample();
-    expect(store.document.tracks).toHaveLength(3);
+    expect(store.document.tracks).toHaveLength(15);
     store.importSvg('<svg viewBox="0 0 10 10"><circle id="dot"/></svg>', 'mine.svg');
     expect(store.document.tracks).toEqual([]);
   });

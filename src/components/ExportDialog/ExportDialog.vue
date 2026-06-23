@@ -134,11 +134,16 @@ onBeforeUnmount(() => {
       </div>
     </div>
 
-    <pre
+    <textarea
       v-if="isCodeFormat(format)"
       :class="styles.code"
       data-testid="export-code"
-    ><code>{{ code }}</code></pre>
+      readonly
+      wrap="off"
+      spellcheck="false"
+      aria-label="Exported code"
+      :value="code"
+    ></textarea>
     <RasterExportPanel v-else :format="rasterFormat" />
   </Modal>
 </template>

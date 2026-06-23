@@ -38,8 +38,13 @@
   white-space: nowrap;
 }
 
+/* A readonly <textarea>, styled to look exactly like the old <pre>: the extra
+ * properties below just neutralise the textarea's native chrome (full-width
+ * block, no resize grabber, no focus ring, no platform appearance). */
 .code {
   margin: 0;
+  display: block;
+  width: 100%;
   height: 380px;
   max-height: 56vh;
   overflow: auto;
@@ -53,8 +58,7 @@
   line-height: 1.6;
   white-space: pre;
   tab-size: 2;
-}
-
-.code code {
-  font-family: inherit;
+  resize: none;
+  outline: none;
+  appearance: none;
 }

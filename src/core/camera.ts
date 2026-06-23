@@ -11,7 +11,7 @@ export interface Camera {
 }
 
 export const ZOOM_MIN = 0.5;
-export const ZOOM_MAX = 1.5;
+export const ZOOM_MAX = 3.0;
 
 /** Per-notch wheel factors, matching the Kinetic demo's feel. */
 const ZOOM_IN_FACTOR = 1.05;

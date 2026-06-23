@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { loadCleanSlate } from './helpers';
 
 // SVG-103 terminal step: the full happy path ends at export — select → add a
 // property → keyframe → scrub → keyframe → open the export modal → copy.
@@ -6,9 +7,8 @@ import { test, expect } from '@playwright/test';
 test('animate a property and export it to CSS and GSAP', async ({ page, context }) => {
   await context.grantPermissions(['clipboard-read', 'clipboard-write']);
   await page.goto('/');
-  // The sample ships an example animation; author on the un-animated Plate layer
-  // for a clean slate (SVG-155).
-  await page.getByTestId('layers-panel').getByRole('button', { name: 'Plate' }).click();
+  // The sample animates every ring, so author on a freshly imported clean slate.
+  await loadCleanSlate(page);
 
   // Add Position X and lay down two keyframes at different times.
   await page.getByTestId('add-property').click();
@@ -27,17 +27,18 @@ test('animate a property and export it to CSS and GSAP', async ({ page, context 
   await page.getByTestId('menu-export').click();
   await expect(page.getByTestId('export-dialog')).toBeVisible();
 
-  // CSS is the default tab and reflects the document.
-  await expect(page.getByTestId('export-code')).toContainText('@keyframes');
-  await expect(page.getByTestId('export-code')).toContainText('animation:');
+  // CSS is the default tab and reflects the document. The code is a readonly
+  // textarea, so assert on its value rather than its text content.
+  await expect(page.getByTestId('export-code')).toHaveValue(/@keyframes/);
+  await expect(page.getByTestId('export-code')).toHaveValue(/animation:/);
 
   // The GSAP tab produces runnable timeline code.
   await page.getByTestId('export-tab-gsap').click();
-  await expect(page.getByTestId('export-code')).toContainText('gsap.timeline');
+  await expect(page.getByTestId('export-code')).toHaveValue(/gsap\.timeline/);
 
   // The SVG tab shows the tagged, inlined markup.
   await page.getByTestId('export-tab-svg').click();
-  await expect(page.getByTestId('export-code')).toContainText('data-anim-id');
+  await expect(page.getByTestId('export-code')).toHaveValue(/data-anim-id/);
 
   // Copy gives feedback.
   await page.getByTestId('export-copy').click();

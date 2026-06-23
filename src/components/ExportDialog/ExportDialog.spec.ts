@@ -52,7 +52,7 @@ function mountDialog() {
 describe('ExportDialog', () => {
   it('shows CSS keyframes for the current document by default', () => {
     const wrapper = mountDialog();
-    const code = wrapper.find('[data-testid="export-code"]').text();
+    const code = (wrapper.find('[data-testid="export-code"]').element as HTMLTextAreaElement).value;
     expect(code).toContain('@keyframes orb-opacity');
     expect(code).toContain('opacity: 0;');
   });
@@ -60,14 +60,14 @@ describe('ExportDialog', () => {
   it('switches to GSAP output', async () => {
     const wrapper = mountDialog();
     await wrapper.find('[data-testid="export-tab-gsap"]').trigger('click');
-    const code = wrapper.find('[data-testid="export-code"]').text();
+    const code = (wrapper.find('[data-testid="export-code"]').element as HTMLTextAreaElement).value;
     expect(code).toContain('gsap.timeline({ repeat: -1 })');
   });
 
   it('switches to the inlined SVG markup', async () => {
     const wrapper = mountDialog();
     await wrapper.find('[data-testid="export-tab-svg"]').trigger('click');
-    const code = wrapper.find('[data-testid="export-code"]').text();
+    const code = (wrapper.find('[data-testid="export-code"]').element as HTMLTextAreaElement).value;
     expect(code).toContain('<circle data-anim-id="orb"');
   });
 

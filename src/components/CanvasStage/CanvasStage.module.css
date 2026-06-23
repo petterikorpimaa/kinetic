@@ -156,12 +156,6 @@
   }
 }
 
-.hint {
-  margin: 0;
-  font-size: 12px;
-  color: var(--dim2);
-}
-
 .viewbox {
   position: absolute;
   bottom: 14px;

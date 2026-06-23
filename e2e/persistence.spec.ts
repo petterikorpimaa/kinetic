@@ -1,11 +1,11 @@
 import { test, expect } from '@playwright/test';
+import { loadCleanSlate } from './helpers';
 
 // M6: undo/redo (SVG-94) and autosave surviving a reload (SVG-95/106).
 
 async function addKeyframe(page: import('@playwright/test').Page): Promise<void> {
-  // Author on the un-animated Plate layer for a clean slate — the sample ships
-  // an example animation on the other layers (SVG-155).
-  await page.getByTestId('layers-panel').getByRole('button', { name: 'Plate' }).click();
+  // The sample animates every ring, so author on a freshly imported clean slate.
+  await loadCleanSlate(page);
   await page.getByTestId('add-property').click();
   await page.getByTestId('add-prop-x').click();
   await page.getByTestId('lane-add-keyframe').click();

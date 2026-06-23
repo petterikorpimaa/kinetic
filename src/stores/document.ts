@@ -6,7 +6,11 @@ import type { CubicBezierEasing } from '@/types/easing';
 import { createEmptyDocument } from '@/types';
 import { processSvg } from '@/core/processSvg';
 import { SAMPLE_SVG, SAMPLE_FILE_NAME } from '@/core/sample';
-import { buildSampleTracks, SAMPLE_SELECTED_ELEMENT_ID } from '@/core/sampleAnimation';
+import {
+  buildSampleTracks,
+  SAMPLE_SELECTED_ELEMENT_ID,
+  SAMPLE_DURATION,
+} from '@/core/sampleAnimation';
 import { DEFAULT_EASING } from '@/core/presets';
 import { snapTime, clampTime } from '@/core/timeline';
 import { produceWithPatches, type Draft } from '@/core/immer';
@@ -351,6 +355,7 @@ export const useDocumentStore = defineStore('document', () => {
       viewBox: processed.viewBox,
       elements: processed.elements,
       tracks: buildSampleTracks(),
+      duration: SAMPLE_DURATION,
       selectedElementId: seeded?.id ?? processed.elements[0]?.id ?? null,
     });
   }

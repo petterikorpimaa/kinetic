@@ -59,7 +59,7 @@ function onExport(): void {
         <span :class="styles.label">Layers · {{ layerCount }}</span>
       </button>
 
-      <CanvasStage />
+      <CanvasStage @import="onImport" />
 
       <InspectorPanel v-if="inspectorOpen" @collapse="inspectorOpen = false" />
       <button

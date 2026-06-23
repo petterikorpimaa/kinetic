@@ -1,4 +1,13 @@
-/** Built-in sample SVG (the demo's "loader" scene), used by the import dialog. */
-export const SAMPLE_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 360"><rect data-anim-id="plate" data-name="Plate" id="plate" x="120" y="60" width="240" height="240" rx="40" fill="#15151e" stroke="#2a2a3a" stroke-width="2"/><circle data-anim-id="ring" data-name="Ring" id="ring" cx="240" cy="180" r="86" fill="none" stroke="#14b8a6" stroke-width="10" stroke-linecap="round"/><circle data-anim-id="orb" data-name="Orb" id="orb" cx="240" cy="180" r="48" fill="#14b8a6"/><path data-anim-id="play" data-name="Play" id="play" d="M225 156 L273 180 L225 204 Z" fill="#ffffff"/></svg>`;
+/**
+ * Built-in sample SVG: a circular "loader" scene used by the import dialog and
+ * the first-run fallback. Three concentric teal rings, each an open two-arc path
+ * starting at twelve o'clock and sweeping clockwise, with round caps so the
+ * seeded stroke-draw animation reveals a rounded leading tip.
+ */
+export const SAMPLE_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 360">
+  <path data-anim-id="inner" data-name="Inner" id="inner" d="M240 140 a40 40 0 1 1 0 80 a40 40 0 1 1 0 -80" fill="none" stroke="#14b8a6" stroke-width="10" stroke-linecap="round"/>
+  <path data-anim-id="middle" data-name="Middle" id="middle" d="M240 108 a72 72 0 1 1 0 144 a72 72 0 1 1 0 -144" fill="none" stroke="#14b8a6" stroke-width="10" stroke-linecap="round"/>
+  <path data-anim-id="outer" data-name="Outer" id="outer" d="M240 76 a104 104 0 1 1 0 208 a104 104 0 1 1 0 -208" fill="none" stroke="#14b8a6" stroke-width="10" stroke-linecap="round"/>
+</svg>`;
 
 export const SAMPLE_FILE_NAME = 'sample-loader.svg';

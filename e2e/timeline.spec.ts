@@ -1,12 +1,12 @@
 import { test, expect } from '@playwright/test';
+import { loadCleanSlate } from './helpers';
 
 // The M3 happy path: select → add property → keyframe → scrub → play → delete.
 // The final "export" step of SVG-103 lands with the export modal in M5.
 
 async function addPositionX(page: import('@playwright/test').Page): Promise<void> {
-  // Author on the un-animated Plate layer for a clean slate — the sample ships
-  // an example animation on the other layers (SVG-155).
-  await page.getByTestId('layers-panel').getByRole('button', { name: 'Plate' }).click();
+  // The sample animates every ring, so author on a freshly imported clean slate.
+  await loadCleanSlate(page);
   await page.getByTestId('add-property').click();
   await page.getByTestId('add-prop-x').click();
   await expect(page.getByTestId('timeline-track')).toBeVisible();

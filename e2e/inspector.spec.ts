@@ -1,13 +1,12 @@
 import { test, expect } from '@playwright/test';
+import { loadCleanSlate } from './helpers';
 
 test('add a property, edit its value, and see it applied on the canvas', async ({ page }) => {
   await page.goto('/');
-  // The sample ships an example animation; author on the un-animated Plate layer
-  // for a clean slate (SVG-155).
-  await page.getByTestId('layers-panel').getByRole('button', { name: 'Plate' }).click();
+  await loadCleanSlate(page);
 
   const inspector = page.getByTestId('inspector-panel');
-  await expect(inspector).toContainText('Plate');
+  await expect(inspector).toContainText('Shape');
   await expect(page.getByTestId('inspector-count')).toHaveText('0');
 
   await page.getByTestId('add-property').click();
@@ -21,15 +20,13 @@ test('add a property, edit its value, and see it applied on the canvas', async (
   await input.blur();
 
   await expect(page.getByTestId('prop-key-x')).toHaveAttribute('data-active', 'true');
-  const plate = page.getByTestId('canvas-stage').locator('[data-anim-id="plate"]');
-  await expect(plate).toHaveAttribute('transform', /translate\(40 /);
+  const shape = page.getByTestId('canvas-stage').locator('[data-anim-id="shape"]');
+  await expect(shape).toHaveAttribute('transform', /translate\(40 /);
 });
 
 test('the add-property menu hides already-active properties', async ({ page }) => {
   await page.goto('/');
-  // The sample ships an example animation; author on the un-animated Plate layer
-  // for a clean slate (SVG-155).
-  await page.getByTestId('layers-panel').getByRole('button', { name: 'Plate' }).click();
+  await loadCleanSlate(page);
 
   await page.getByTestId('add-property').click();
   await page.getByTestId('add-prop-opacity').click();
@@ -42,9 +39,7 @@ test('the add-property menu hides already-active properties', async ({ page }) =
 
 test('remove a property clears its row and resets the count', async ({ page }) => {
   await page.goto('/');
-  // The sample ships an example animation; author on the un-animated Plate layer
-  // for a clean slate (SVG-155).
-  await page.getByTestId('layers-panel').getByRole('button', { name: 'Plate' }).click();
+  await loadCleanSlate(page);
 
   await page.getByTestId('add-property').click();
   await page.getByTestId('add-prop-opacity').click();
@@ -58,9 +53,7 @@ test('remove a property clears its row and resets the count', async ({ page }) =
 
 test('a colour property accepts a hex value', async ({ page }) => {
   await page.goto('/');
-  // The sample ships an example animation; author on the un-animated Plate layer
-  // for a clean slate (SVG-155).
-  await page.getByTestId('layers-panel').getByRole('button', { name: 'Plate' }).click();
+  await loadCleanSlate(page);
 
   await page.getByTestId('add-property').click();
   await page.getByTestId('add-prop-fill').click();
@@ -70,6 +63,6 @@ test('a colour property accepts a hex value', async ({ page }) => {
   await hex.blur();
 
   await expect(page.getByTestId('prop-key-fill')).toHaveAttribute('data-active', 'true');
-  const plate = page.getByTestId('canvas-stage').locator('[data-anim-id="plate"]');
-  await expect(plate).toHaveAttribute('fill', '#ff0000');
+  const shape = page.getByTestId('canvas-stage').locator('[data-anim-id="shape"]');
+  await expect(shape).toHaveAttribute('fill', '#ff0000');
 });

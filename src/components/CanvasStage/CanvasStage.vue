@@ -1,6 +1,14 @@
 <script setup lang="ts">
 import { ref, shallowRef, computed, watch, onMounted, nextTick } from 'vue';
-import { Clapperboard, Grid3x3, Grip, Square, ChevronDown, RotateCcw } from '@lucide/vue';
+import {
+  Clapperboard,
+  Grid3x3,
+  Grip,
+  Square,
+  ChevronDown,
+  RotateCcw,
+  UploadCloud,
+} from '@lucide/vue';
 import { useDocumentStore, type ElementMetric } from '@/stores/document';
 import { usePlaybackStore } from '@/stores/playback';
 import type { SceneElement } from '@/types/element';
@@ -36,6 +44,8 @@ const PAN_THRESHOLD_PX = 2;
 
 const store = useDocumentStore();
 const playback = usePlaybackStore();
+
+const emit = defineEmits<{ import: [] }>();
 
 // Live node refs + their original attributes, rebuilt on each (re)mount. The
 // baseline lets us restore an element when a property is removed or animation
@@ -83,6 +93,9 @@ function startPan(event: PointerEvent): void {
   const base = camera.value;
   let moved = false;
   isPanning.value = true;
+  // Suppress text selection for the whole drag so panning past the canvas edge
+  // never sweeps a selection across the surrounding panels.
+  document.body.style.userSelect = 'none';
 
   function onMove(move: PointerEvent): void {
     const dx = move.clientX - startX;
@@ -95,6 +108,7 @@ function startPan(event: PointerEvent): void {
     window.removeEventListener('pointermove', onMove);
     window.removeEventListener('pointerup', onUp);
     isPanning.value = false;
+    document.body.style.userSelect = '';
     if (!moved) store.selectElement(null);
   }
 
@@ -320,7 +334,10 @@ function setPattern(pattern: BgPattern): void {
       <div :class="styles.camera" :style="cameraStyle">
         <div :class="styles.stage" :style="stageStyle">
           <div v-if="svgMarkup" ref="hostRef" :class="styles.svgHost" v-html="svgMarkup" />
-          <p v-else :class="styles.hint">Import an SVG to start animating.</p>
+          <Button v-else data-testid="empty-import" title="Import an SVG" @click="emit('import')">
+            <UploadCloud :size="15" :stroke-width="1.5" />
+            Import an SVG to start animating
+          </Button>
         </div>
       </div>
     </div>
