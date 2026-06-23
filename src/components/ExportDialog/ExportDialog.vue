@@ -4,7 +4,6 @@ import { Check, Copy, Download } from '@lucide/vue';
 import { useDocumentStore } from '@/stores/document';
 import { exportCss } from '@/core/cssExport';
 import { exportGsap } from '@/core/gsapExport';
-import { exportAnimatedSvg } from '@/core/svgExport';
 import RasterExportPanel from '../RasterExportPanel/RasterExportPanel.vue';
 import Button from '@/atoms/Button/Button.vue';
 import Modal from '@/atoms/Modal/Modal.vue';
@@ -44,9 +43,8 @@ const rasterFormat = computed<'gif' | 'video'>(() => (format.value === 'video' ?
 function generate(which: CodeFormat): string {
   if (which === 'css') return exportCss(store.document);
   if (which === 'gsap') return exportGsap(store.document);
-  // A self-contained animated SVG (markup + embedded keyframes), so it renders
-  // standalone exactly as the editor does.
-  return exportAnimatedSvg(store.document) || '<!-- Import an SVG to export its markup. -->';
+  // The cleaned, tagged markup — animation lives in the CSS / GSAP tabs.
+  return store.document.svgMarkup || '<!-- Import an SVG to export its markup. -->';
 }
 
 const code = computed(() => (isCodeFormat(format.value) ? generate(format.value) : ''));

@@ -64,13 +64,13 @@ describe('ExportDialog', () => {
     expect(code).toContain('gsap.timeline({ repeat: -1 })');
   });
 
-  it('switches to a self-contained animated SVG (markup + embedded keyframes)', async () => {
+  it('switches to the tagged, inlined SVG markup (no embedded CSS)', async () => {
     const wrapper = mountDialog();
     await wrapper.find('[data-testid="export-tab-svg"]').trigger('click');
     const code = (wrapper.find('[data-testid="export-code"]').element as HTMLTextAreaElement).value;
-    expect(code).toContain('<circle data-anim-id="orb"'); // markup preserved
-    expect(code).toContain('<style>'); // animation embedded
-    expect(code).toContain('@keyframes orb-opacity');
+    expect(code).toContain('<circle data-anim-id="orb"'); // tagged markup
+    expect(code).not.toContain('<style>'); // animation lives in the CSS/GSAP tabs
+    expect(code).not.toContain('@keyframes');
   });
 
   it('copies the code and shows feedback', async () => {

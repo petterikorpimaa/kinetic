@@ -36,10 +36,9 @@ test('animate a property and export it to CSS and GSAP', async ({ page, context 
   await page.getByTestId('export-tab-gsap').click();
   await expect(page.getByTestId('export-code')).toHaveValue(/gsap\.timeline/);
 
-  // The SVG tab shows a self-contained animated SVG (tagged markup + embedded keyframes).
+  // The SVG tab shows the tagged, inlined markup (no embedded CSS).
   await page.getByTestId('export-tab-svg').click();
   await expect(page.getByTestId('export-code')).toHaveValue(/data-anim-id/);
-  await expect(page.getByTestId('export-code')).toHaveValue(/@keyframes/);
 
   // Copy gives feedback.
   await page.getByTestId('export-copy').click();

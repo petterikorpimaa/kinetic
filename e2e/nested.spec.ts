@@ -39,13 +39,17 @@ test('imports a grouped SVG as a selectable, exportable layer tree', async ({ pa
   // The nested layer now carries a keyframe-presence dot.
   await expect(layers.getByTestId('layer-dot-petal')).toBeVisible();
 
-  // Export the self-contained animated SVG: nested id targeted + clip-path intact.
+  // Export markup keeps the nested element + its clip-path intact.
   await page.getByTestId('menu-button').click();
   await page.getByTestId('menu-export').click();
   await page.getByTestId('export-tab-svg').click();
   const code = page.getByTestId('export-code');
-  await expect(code).toHaveValue(/\[data-anim-id="petal"\]/);
+  await expect(code).toHaveValue(/data-anim-id="petal"/);
   await expect(code).toHaveValue(/clip-path="url\(#clip0\)"/);
+
+  // The animation still exports via CSS, keyed on the nested id.
+  await page.getByTestId('export-tab-css').click();
+  await expect(code).toHaveValue(/\[data-anim-id="petal"\]/);
 });
 
 // SVG-157: dragging a top-level layer onto a group nests it as a child.
