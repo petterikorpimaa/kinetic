@@ -38,6 +38,3 @@ pnpm-debug.log*
 .env
 .env.*
 !.env.example
-
-# Design handoff bundle (reference only, not part of the app build)
-svg-animation-editor-tool-demo/
